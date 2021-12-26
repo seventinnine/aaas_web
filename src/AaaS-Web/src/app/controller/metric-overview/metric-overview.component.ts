@@ -4,6 +4,7 @@ import { Component, OnInit } from '@angular/core';
 import { Metric } from 'src/app/model/telemetricData/metric';
 import { AaasApiService } from 'src/app/service/aaas-api/aaas-api.service';
 import { environment } from 'src/environments/environment';
+import { ClientIdComparer } from 'src/app/util/client-id-comparer';
 
 class ChartData {
   constructor(
@@ -67,7 +68,7 @@ export class MetricOverviewComponent implements OnInit {
   private loadClientInstances() {
     this.apiService.getClientInstances(environment.apiKey).subscribe(res => {
       if (res != null) {
-        this.clientInstances = res;
+        this.clientInstances = res.sort((a, b) => ClientIdComparer.compareClientIdByLastDigits(a, b));
         this.clientInstancesLoaded = true;
         this.errorLoadingClientInstances = false;
       } else {

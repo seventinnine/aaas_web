@@ -1,40 +1,103 @@
 <div calss="container">
     <h1 *ngIf="isUpdatingDetector" class="m-5">Edit Detector</h1>
     <h1 *ngIf="!isUpdatingDetector" class="m-5">Add Detector</h1>
-    <form class="m-5" [formGroup]="detectorForm" (ngSubmit)="submitForm()">
+    <form class="m-5" [formGroup]="detectorForm" (ngSubmit)="submitForm($event)">
+        <div class="row">
+                <dx-form
+                    id="form"
+                    [formData]="detector"
+                    [showColonAfterLabel]="true"
+                    [showValidationSummary]="true">
+                    
+                <div class="col">
+
+                    <dxi-item itemType="group" caption="General Settings">
+                        
+                        
+                        
+                    </dxi-item>
+                    
+                    
+                </div>
+                <div class="col">
+
+                    <dxi-item itemType="group" caption="Condition Settings">
+                        
+                        
+                        
+                    </dxi-item>
+                    <dxi-item itemType="group" caption="Action Settings">
+                        
+                        
+                        
+                    </dxi-item>
+                </div>
+                <dxi-item
+                itemType="button"
+                horizontalAlignment="left"
+                [buttonOptions]="buttonOptions"></dxi-item>
+            </dx-form>
+        </div>
+        
+        <!--
         <div class="row">
 
-            <div class="col">
-                <h3>General Settings:</h3>
-                <div class="form-group">
-                    <label for="executionInterval-input">Execution Interval (in seconds)</label>
-                    <input id="executionInterval-input" class="form-control" name="executionInterval" formControlName="executionInterval" placeholder="1800">
-                    <div *ngIf="errors['executionInterval']" class="form-text text-danger">
-                        {{ errors['executionInterval'] }}
+                <div class="col">
+                    <h3>General Settings:</h3>
+                    <div class="form-group">
+                        <label for="executionInterval-input">Execution Interval (in seconds)</label>
+                        <input id="executionInterval-input" class="form-control" name="executionInterval" formControlName="executionInterval" placeholder="1800">
+                        <div *ngIf="errors['executionInterval']" class="form-text text-danger">
+                            {{ errors['executionInterval'] }}
+                        </div>
                     </div>
-                </div>
-                <!--
-                    
-                <div class="form-group">
-                    <label for="type-input">Detector type</label>
-                    <select class="form-select" id="type-input">
-                        <option *ngFor="let type of detectorTypes" [value]="type.id"}>
-                            {{type.displayName}}
-                        </option>
-                    </select>
-                    <div *ngIf="errors['type']" class="form-text text-danger">
+                    <dx-form
+                    id="form"
+                    [formData]="detector"
+                    [readOnly]="false"
+                    [showColonAfterLabel]="true"
+                    [showValidationSummary]="true"
+                    validationGroup="customerData"
+                    >
+                    <dxi-item
+                    dataField="Detector Type"
+                    editorType="dxSelectBox"
+                    [editorOptions]="{ dataSource: detectorTypes }"
+                    >
+                    <dxi-validation-rule type="required" message="Detector Type is required">
+                    </dxi-validation-rule>
+                </dxi-item>
+                <dxi-item
+                itemType="button"
+                horizontalAlignment="left"
+                
+                [buttonOptions]="buttonOptions"
+                >
+            </dxi-item>
+        </dx-form>
+    -->
+        <!--
+            
+            <div class="form-group">
+                <label for="type-input">Detector type</label>
+                <select class="form-select" id="type-input">
+                    <option *ngFor="let type of detectorTypes" [value]="type.id"}>
+                        {{type.displayName}}
+                    </option>
+                </select>
+                <div *ngIf="errors['type']" class="form-text text-danger">
                         {{ errors['type'] }}
                     </div>
                 </div>
-                -->
                 
             </div>
             <div class="col">
                 <h3>Condition Settings:</h3>
+                <h3>Action Settings:</h3>
             </div>
             
         </div>
-
+    -->
 
     </form>
 </div>

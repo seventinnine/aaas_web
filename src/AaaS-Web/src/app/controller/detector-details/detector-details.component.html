@@ -57,9 +57,9 @@
             <a class="btn btn-primary" [routerLink]="['/detectors']">
                 Back
             </a>
-            <div class="btn btn-primary">
+            <a class="btn btn-primary" [routerLink]="['/detectors/form', detector.id]">
                 Edit
-            </div>
+            </a>
             <aaas-detector-deletion [detectorId]="detector?.id"></aaas-detector-deletion>
         </div>
     </div>

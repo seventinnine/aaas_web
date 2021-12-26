@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Detector } from 'src/app/model/detector/detector';
 import { AaasApiService } from 'src/app/service/aaas-api/aaas-api.service';
-import { typeMustExistValidator } from 'src/app/validator/type-must-exist-validator';
+import { typeMustExistValidator, validDetectorTypes } from 'src/app/validator/type-must-exist-validator';
 import { environment } from 'src/environments/environment';
 import { DetectorFormErrorMessages } from './detector-form-error-messages';
 
@@ -17,6 +17,7 @@ export class DetectorFormComponent implements OnInit {
   isUpdatingDetector: boolean = false;
   detectorForm!: FormGroup;
   detector: Detector = new Detector();
+  detectorTypes = validDetectorTypes;
   errors: { [key: string]: string } = {};
   
   constructor(
@@ -49,26 +50,18 @@ export class DetectorFormComponent implements OnInit {
         Validators.required,
         typeMustExistValidator()
       ]]
-      /*
-      title: [this.book.title, Validators.required],
-      publisher: this.book.publisher,
-      id: [this.book.id, [
-        Validators.required,
-        Validators.minLength(1),
-        Validators.maxLength(8)
-      ]],
-      description: this.book.description,
-      author: this.book.author,
-      year: this.book.year,
-      price: this.book.price,
-      picture: this.book.picture
-      */
     })
 
     this.detectorForm.statusChanges.subscribe(() => this.updateErrorMessages());
   }
 
-  submitForm() {
+  buttonOptions: any = {
+    text: 'Send',
+    type: 'success',
+    useSubmitBehavior: true
+  };
+
+  submitForm(e:any) {
 
   }
 

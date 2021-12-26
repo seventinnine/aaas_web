@@ -9,14 +9,15 @@
   [rowAlternationEnabled]="true"
   [showBorders]="true"
 >
-    <dxi-column dataField="clientId" [groupIndex]="0"></dxi-column>
+    <dxi-column dataField="clientId" [groupIndex]="0"
+    [sortingMethod]="sortClientIdByLastDigits"></dxi-column>
     <dxi-column dataField="category" [groupIndex]="1"></dxi-column>
     <dxi-column dataField="name" [groupIndex]="2"></dxi-column>
     <dxi-column
       dataField="timestamp"
       [width]="200"
       caption="Timestamp" 
-      [calculateCellValue]="calculateCellValue"
+      [calculateCellValue]="calculateTimestampValue"
       [sortingMethod]="sortStringsConsideringDate"> <!-- enables sorting -->
       <!-- 
         <div *dxTemplate="let data of 'timestamp'">  
@@ -24,7 +25,7 @@
         </div>  
       -->  
     </dxi-column>
-    <dxi-column dataField="message"></dxi-column>
+    <dxi-column dataField="message" caption="Message"></dxi-column>
     <dxo-paging [pageSize]="30"></dxo-paging>
     <dxo-grouping [autoExpandAll]="isExpanded ?? false"></dxo-grouping>
 </dx-data-grid>

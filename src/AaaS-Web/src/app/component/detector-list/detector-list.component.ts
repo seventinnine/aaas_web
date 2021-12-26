@@ -26,7 +26,16 @@ export class DetectorListComponent implements OnInit {
   constructor(private apiService: AaasApiService) { }
 
   ngOnInit(): void {
-    this.loadingDetectors = true;
+    this.loadDetectors();
+  }
+  
+  /*
+  updateDetectorList(appKey: string) {
+    this.appKey = appKey;
+    this.loadDetectors();
+  }
+*/
+  loadDetectors() {
     this.apiService.getDetectors(environment.apiKey).subscribe(res => {
       if (res != null) {
         this.filterResult = res;

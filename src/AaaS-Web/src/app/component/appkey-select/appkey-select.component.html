@@ -1,0 +1,9 @@
+<dx-select-box
+    #appKeySelect
+    [(disabled)]="loadingAppKeys"
+    [dataSource]="appKeys"
+    (onValueChanged)="selectionChanged.emit(appKeySelect.value)">
+</dx-select-box>
+<div *ngIf="!loadingAppKeys && errorLoadingAppKeys" class="text-danger">
+    Could not load appKeys.
+</div>

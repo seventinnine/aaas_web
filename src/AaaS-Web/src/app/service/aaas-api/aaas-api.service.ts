@@ -38,6 +38,11 @@ export class AaasApiService {
     return res;
   }
 
+  getAppKeys(): Observable<string[]> {
+    return this.http.get<ClientInstance[]>(`${environment.server}/Client`)
+      .pipe(map<any, string[]>(res => res), catchError(this.errorHandlerQuery));
+  }
+
   getClientInstances(appkey: string): Observable<string[]> {
     return this.http.get<ClientInstance[]>(`${environment.server}/ClientInstance?appkey=${appkey}`)
       .pipe(map<any, string[]>(res => res.map((ci: ClientInstance) => ci.clientId)), catchError(this.errorHandlerQuery));

@@ -2,6 +2,7 @@
 <aaas-item-not-found [visible]="errorLoadingDetectors"></aaas-item-not-found>
 <aaas-loading [visible]="loadingDetectors"></aaas-loading>
 <div *ngIf="!errorLoadingDetectors && !loadingDetectors">
+  <!-- <aaas-appkey-select (selectionChanged)="updateDetectorList($event)"></aaas-appkey-select> -->
   <div class="container text-center m-3">
     <h1>Detectors</h1>
     <div>
@@ -41,7 +42,4 @@
     >
     </dxo-pager>
   </dx-data-grid>
-  <button class="btn btn-primary" [routerLink]="'/detectors/form'">
-    Add Detector
-  </button>
 </div>

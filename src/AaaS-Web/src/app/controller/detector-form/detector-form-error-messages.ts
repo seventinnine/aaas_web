@@ -7,6 +7,7 @@ export class ErrorMessage {
 }
 
 export const DetectorFormErrorMessages: ErrorMessage[] = [
+  new ErrorMessage('detectorType', 'required', 'Detector Type is required.')
     /*
     new ErrorMessage('title', 'required', 'Ein Buchtitel muss angegeben werden'),
     new ErrorMessage('id', 'required', 'Es muss eine ID angegeben werden'),

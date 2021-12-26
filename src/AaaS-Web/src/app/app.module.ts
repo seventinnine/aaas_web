@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 
 // devextreme-angular
-import { DxListModule, DxDataGridModule, DxCheckBoxModule, DxSelectBoxModule, DxPopupModule, DxToastModule, DxButtonModule, DxTextBoxModule, DxChartModule, DxAccordionModule } from 'devextreme-angular';
+import { DxListModule, DxDataGridModule, DxCheckBoxModule, DxSelectBoxModule, DxPopupModule, DxToastModule, DxButtonModule, DxTextBoxModule, DxChartModule, DxAccordionModule, DxFormModule, DxAutocompleteModule } from 'devextreme-angular';
 
 // controllers
 import { AppComponent } from './app.component';
@@ -23,6 +23,7 @@ import { WebHookActionDetailsComponent } from './component/web-hook-action-detai
 import { MailActionDetailsComponent } from './component/mail-action-details/mail-action-details.component';
 import { ItemNotFoundComponent } from './component/item-not-found/item-not-found.component';
 import { LoadingComponent } from './component/loading/loading.component';
+import { AppkeySelectComponent } from './component/appkey-select/appkey-select.component';
 
 // imports
 import { BrowserModule } from '@angular/platform-browser';
@@ -57,6 +58,7 @@ import { IntervalToReadableTimePipe } from './pipe/interval-to-readable-time.pip
     LogSearchComponent,
     ItemNotFoundComponent,
     LoadingComponent,
+    AppkeySelectComponent,
     
     // pipes
     IntervalToReadableTimePipe
@@ -79,7 +81,9 @@ import { IntervalToReadableTimePipe } from './pipe/interval-to-readable-time.pip
     DxTextBoxModule,
     DxListModule,
     DxChartModule,
-    DxAccordionModule
+    DxAccordionModule,
+    DxFormModule,
+    DxAutocompleteModule
 
   ],
   providers: [],
