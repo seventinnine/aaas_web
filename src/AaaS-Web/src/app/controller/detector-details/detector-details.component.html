@@ -1,0 +1,67 @@
+<div *ngIf="detector" class="container">
+    <div class="d-flex flex-column">
+        <div class="d-flex flex-row">
+            <div>
+                Detector {{detector.id}} ({{detector.type}})
+            </div>
+            <div *ngIf="detector.enabled && !updating" class="fs-2 btn btn-success" (click)="disableDetector()">
+                Enabled
+            </div>
+            <div *ngIf="!detector.enabled && !updating" class="fs-2 btn btn-danger" (click)="enableDetector()">
+                Disabled
+            </div>
+            <dx-toast [(visible)]="isToastVisible" [type]="toastType">
+                <div *dxTemplate="let data of 'content'">
+                    <div class="fs-2 text-center"> {{toastMessage}}</div>
+                </div>
+            </dx-toast>
+            <div *ngIf="updating" class="d-flex">
+                <div class="spinner-border text-primary" role="status">
+                </div>
+                <div class="fs-2">
+                    Loading...
+                </div>
+            </div>
+        </div>
+        <div>
+            Created for {{detector.appKey}}
+        </div>
+        <div>
+            Observes anomialies in Metric of Type '{{detector.telemetricName}}'
+        </div>
+        <div>
+            Triggers every {{detector.executionInterval | intervalToReadableTime}}
+        </div>
+        <div>
+            Configuration:
+            <div>
+                Detector Parameters:
+            </div>
+            <div [ngSwitch]="detector.type">
+                <div>
+                    <aaas-min-max-detector-details *ngSwitchCase="'MinMaxDetector'"></aaas-min-max-detector-details>
+                    <aaas-sliding-window-detector-details *ngSwitchCase="'SlidingWindowDetector'"></aaas-sliding-window-detector-details>
+                </div>
+            </div>
+            <div>
+                Action Parameters:
+            </div>
+            <div [ngSwitch]="detector.action?.type">
+                <div>
+                    <aaas-web-hook-action-details *ngSwitchCase="'WebHookAction'"></aaas-web-hook-action-details>
+                    <aaas-mail-action-details *ngSwitchCase="'MailAction'"></aaas-mail-action-details>
+                </div>
+            </div>
+        </div>
+        <div>
+            <a class="btn btn-primary" [routerLink]="['/detectors']">
+                Back
+            </a>
+            <div class="btn btn-primary">
+                Edit
+            </div>
+            <aaas-detector-deletion [detectorId]="detector?.id"></aaas-detector-deletion>
+        </div>
+    </div>
+</div>
+<aaas-item-not-found [visible]="!detector" [destination]="'/detectors'"></aaas-item-not-found>

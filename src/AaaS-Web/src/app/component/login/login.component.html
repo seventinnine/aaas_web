@@ -1,0 +1,24 @@
+<div class="align-center d-flex align-items-center flex-column">
+    <div *ngIf="!loggedIn" class="column">
+        <h2 class="ui image header">
+        <div class="content">
+            Log-in to your account
+        </div>
+        </h2>
+        <form
+            class="ui large form" _lpchecked="1"
+            #loginForm="ngForm"
+            (ngSubmit)="submitForm()">
+            <div class="ui stacked segment">
+                <button class="ui fluid large red submit button" [disabled]="loginForm.invalid">Login</button>
+            </div>
+        </form>
+    </div>
+    <div *ngIf="loggedIn" class="container text-center">
+        <h1 class="m-5" >Your are already logged in :)</h1>
+        <div class="d-flex">
+            
+    
+        </div>
+    </div>
+</div>

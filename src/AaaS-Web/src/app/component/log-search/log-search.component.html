@@ -1,0 +1,38 @@
+<div class="row fs1 m2">
+    <!--
+
+        <div class="fs1 m2">Search:</div>
+        <div class="col">
+            <div class="fs1 m2">Log Category</div>
+            <dx-select-box
+            #search1
+            [showClearButton]="true"
+            placeholder="Search ..."
+            [items]="logCategories"
+            (onValueChanged)="valueChanged.emit(search1.value)"
+            >
+        </dx-select-box>
+    </div>
+    <div class="col">
+        <div class="fs1 m2">Client Instance</div>
+        <dx-text-box
+        #search2
+        [showClearButton]="true"
+        placeholder="Search ..."
+        (onKeyUp)="keyUp.emit(search2.value)"
+        ></dx-text-box>
+    </div>
+    <div class="col">
+        <div class="fs1 m2">Telemetric Name</div>
+        <dx-text-box
+            #search3
+            [showClearButton]="true"
+            placeholder="Search ..."
+            (onKeyUp)="keyUp.emit(search3.value)"
+            ></dx-text-box>
+        </div>
+    -->
+    <div >Search </div>
+    <input type="text" class="form-control" placeholder="Search ..."
+			#search (keyup)="keyUp.emit(search.value)"/>
+</div>

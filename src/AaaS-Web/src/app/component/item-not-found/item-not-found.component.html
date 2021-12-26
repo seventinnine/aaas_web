@@ -1,0 +1,10 @@
+<div *ngIf="visible" class="m-4 mt-5 align-center d-flex align-items-center flex-column">
+    <h1>Error loading resource</h1>
+    <h3>Could not fetch this resource from our API.</h3>
+    <a *ngIf="destination" class="btn btn-primary mt-3" [routerLink]="destination">
+        {{redirectButtonMessage}}
+    </a>
+    <a *ngIf="offerRetry" class="btn btn-primary mt-3" (click)="reloadPage()">
+        Retry
+    </a>
+</div>

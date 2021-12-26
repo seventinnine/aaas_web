@@ -1,0 +1,40 @@
+<div calss="container">
+    <h1 *ngIf="isUpdatingDetector" class="m-5">Edit Detector</h1>
+    <h1 *ngIf="!isUpdatingDetector" class="m-5">Add Detector</h1>
+    <form class="m-5" [formGroup]="detectorForm" (ngSubmit)="submitForm()">
+        <div class="row">
+
+            <div class="col">
+                <h3>General Settings:</h3>
+                <div class="form-group">
+                    <label for="executionInterval-input">Execution Interval (in seconds)</label>
+                    <input id="executionInterval-input" class="form-control" name="executionInterval" formControlName="executionInterval" placeholder="1800">
+                    <div *ngIf="errors['executionInterval']" class="form-text text-danger">
+                        {{ errors['executionInterval'] }}
+                    </div>
+                </div>
+                <!--
+                    
+                <div class="form-group">
+                    <label for="type-input">Detector type</label>
+                    <select class="form-select" id="type-input">
+                        <option *ngFor="let type of detectorTypes" [value]="type.id"}>
+                            {{type.displayName}}
+                        </option>
+                    </select>
+                    <div *ngIf="errors['type']" class="form-text text-danger">
+                        {{ errors['type'] }}
+                    </div>
+                </div>
+                -->
+                
+            </div>
+            <div class="col">
+                <h3>Condition Settings:</h3>
+            </div>
+            
+        </div>
+
+
+    </form>
+</div>

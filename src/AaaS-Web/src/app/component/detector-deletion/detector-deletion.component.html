@@ -1,0 +1,17 @@
+<div *ngIf="!popupVisible" class="btn btn-danger" (click)="popupVisible = true;">
+    Delete
+</div>
+<div *ngIf="popupVisible">
+    Are you sure?
+    <div class="btn btn-danger" (click)="deleteDetector()">
+        Dew it!
+    </div>
+    <div class="btn btn-success" (click)="popupVisible = false;">
+        NO!
+    </div>
+</div>
+<dx-toast [(visible)]="deletionError" [type]="'error'">
+    <div *dxTemplate="let data of 'content'">
+        <div class="fs-2 text-center">Error deleting detector!</div>
+    </div>
+</dx-toast>

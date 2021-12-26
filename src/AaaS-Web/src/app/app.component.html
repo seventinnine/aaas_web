@@ -1,0 +1,60 @@
+<div class="px-3 py-2 bg-dark text-white">
+  <div class="d-flex bd-highlight align-items-center">
+      <div class="me-auto bd-highligh">
+        <a 
+          routerLink="home"
+          routerLinkActive="active"
+          class="nav-link text-white d-flex justify-content-center align-items-center">
+          <img
+            src="../assets/data-analytics.svg"
+            class="bi d-block mx-auto mb-1 bg-white"
+            width="50"
+            height="50"/>
+          <div class="fs-4 mx-2">SWK/WEA5 AaaS</div>
+        </a>
+      </div>
+      <div class="nav bd-highligh">
+        <a
+          routerLink="metrics"
+          routerLinkActive="active"
+          class="nav-link text-white d-flex justify-content-center align-items-center">
+          <img
+            src="../assets/metric.svg"
+            class="bi d-block mx-auto mb-1 bg-white"
+            width="50"
+            height="50"/>
+          <div class="fs-4 mx-2">Metrics</div>
+        </a>
+        <a
+          routerLink="logs"
+          routerLinkActive="active"
+          class="nav-link text-white d-flex justify-content-center align-items-center">
+          <img
+            src="../assets/log.svg"
+            class="bi d-block mx-auto mb-1 bg-white"
+            width="50"
+            height="50"/>
+          <div class="fs-4 mx-2">Logs</div>
+        </a>
+        <a
+          routerLink="detectors"
+          routerLinkActive="active"
+          class="nav-link text-white d-flex justify-content-center align-items-center">
+          <img
+            src="../assets/detector.svg"
+            class="bi d-block mx-auto mb-1 bg-white"
+            width="50"
+            height="50"/>
+          <div class="fs-4 mx-2">Detectors</div>
+        </a>
+        <a
+          routerLink="login" 
+          routerLinkActive="active"
+          class="nav-link text-white d-flex justify-content-center align-items-center">
+          <div class="fs-4 mx-2">LogIn</div>
+        </a>
+      </div>
+  </div>
+</div>
+
+<router-outlet></router-outlet>

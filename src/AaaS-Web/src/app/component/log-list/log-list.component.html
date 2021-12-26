@@ -1,0 +1,30 @@
+<div>
+  <dx-check-box [(value)]="isExpanded" text="Expand All Groups">
+  </dx-check-box>
+</div>
+<dx-data-grid class="text-dark"
+  id="gridContainer"
+  [dataSource]="displayData"
+  [allowColumnReordering]="false"
+  [rowAlternationEnabled]="true"
+  [showBorders]="true"
+>
+    <dxi-column dataField="clientId" [groupIndex]="0"></dxi-column>
+    <dxi-column dataField="category" [groupIndex]="1"></dxi-column>
+    <dxi-column dataField="name" [groupIndex]="2"></dxi-column>
+    <dxi-column
+      dataField="timestamp"
+      [width]="200"
+      caption="Timestamp" 
+      [calculateCellValue]="calculateCellValue"
+      [sortingMethod]="sortStringsConsideringDate"> <!-- enables sorting -->
+      <!-- 
+        <div *dxTemplate="let data of 'timestamp'">  
+          {{data.data.timestamp | date:'medium'}}  
+        </div>  
+      -->  
+    </dxi-column>
+    <dxi-column dataField="message"></dxi-column>
+    <dxo-paging [pageSize]="30"></dxo-paging>
+    <dxo-grouping [autoExpandAll]="isExpanded ?? false"></dxo-grouping>
+</dx-data-grid>
