@@ -1,5 +1,5 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { debounceTime, distinctUntilChanged, Observable, switchMap, tap } from 'rxjs';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { debounceTime, distinctUntilChanged, Observable, Subject, switchMap, takeUntil, tap } from 'rxjs';
 import { LogMessage } from 'src/app/model/telemetricData/log-message';
 import { AaasApiService } from 'src/app/service/aaas-api/aaas-api.service';
 import { environment } from 'src/environments/environment';
@@ -10,20 +10,21 @@ import { environment } from 'src/environments/environment';
   styles: [
   ]
 })
-export class LogSearchComponent implements OnInit {
+export class LogSearchComponent implements OnInit, OnDestroy {
 
+  private destroy$: Subject<void> = new Subject<void>();
+  
+  /*
   logCategories: string[] = ['Warning', 'Trace', 'Error']
 
-  /*
   categoryQuery: string = "";
   clientIdQuery: string = "";
   telemetricNameQuery: string = "";
-*/
-  @Output() metricFiltered = new EventEmitter<LogMessage[]>();
+  */
   //valueChanged = new EventEmitter<string>();
-  keyUp = new EventEmitter<string>();
 
-  
+  @Output() logsFiltered = new EventEmitter<LogMessage[]>();
+  keyUp = new EventEmitter<string>();
 
   constructor(
     private apiService: AaasApiService
@@ -33,13 +34,18 @@ export class LogSearchComponent implements OnInit {
     /*
     this.valueChanged.pipe(
       switchMap(searchTerm => this.filterLogMessages(searchTerm)),
-    ).subscribe(res => this.metricFiltered.emit(res));
+    ).subscribe(res => this.logsFiltered.emit(res));
     */
     this.keyUp.pipe(
       debounceTime(500),
       distinctUntilChanged(),
       switchMap(searchTerm => this.filterLogMessages(searchTerm)),
-    ).subscribe(res => this.metricFiltered.emit(res));
+      takeUntil(this.destroy$)
+    ).subscribe(res => this.logsFiltered.emit(res));
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
   }
   
   private filterLogMessages(searchTerm: string): Observable<LogMessage[] > {

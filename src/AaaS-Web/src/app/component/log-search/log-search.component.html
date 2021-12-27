@@ -31,8 +31,11 @@
             (onKeyUp)="keyUp.emit(search3.value)"
             ></dx-text-box>
         </div>
+        <div >Search </div>
     -->
-    <div >Search </div>
-    <input type="text" class="form-control" placeholder="Search ..."
-			#search (keyup)="keyUp.emit(search.value)"/>
+    <input
+        type="text"
+        class="form-control"
+        placeholder="Search ..."
+		#search (keyup)="keyUp.emit(search.value)"/>
 </div>

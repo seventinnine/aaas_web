@@ -23,7 +23,10 @@
       <dxi-column dataField="appKey" dataType="string" width="400" caption="App Key"></dxi-column>
       <dxi-column dataField="telemetricName" dataType="string" width="200" caption="Name"></dxi-column>
       <dxi-column dataField="enabled" dataType="boolean" width=100 caption="Enabled"></dxi-column>
-      <dxi-column cellTemplate="executionInterval" width="100" caption="Interval" alignment="right">
+      <dxi-column
+        cellTemplate="executionInterval"
+        width="100" caption="Interval"
+        alignment="right">
         <div *dxTemplate="let data of 'executionInterval'">  
           {{data.data.executionInterval | intervalToReadableTime}}  
         </div>  

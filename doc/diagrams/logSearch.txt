@@ -1,0 +1,33 @@
+title LogSearchComponent
+
+
+participant "(LogSearchComponent)\nkeyUpEventEmitter" as keyUp
+
+
+
+
+
+participant "AaaSApiService" as Service
+
+
+
+
+participant "(LogSearchComponent)\nLogsFilteredEventEmitter" as Logs
+
+
+
+
+participant "LogOverviewComponent" as Overview
+participant "LogListComponent" as List
+
+
+
+
+participant "Aaas.Api" as Api
+
+keyUp->Service:1: text changed\nemit(searchTerm)
+Service->Api:2: api/Log&appKey=...&searchTerm
+Service<--Api:3: res = result as observable
+Logs<-Service:4: logs = res
+Logs->Overview:5: send filtered data\nemit(logs)
+Overview->List:6: [displayData] = logs\ndata binding updated

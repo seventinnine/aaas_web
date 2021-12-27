@@ -1,4 +1,3 @@
-import localeDe from '@angular/common/locales/de';
 import { DatePipe } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
 import { LogMessage } from 'src/app/model/telemetricData/log-message';

@@ -1,5 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subject, takeUntil } from 'rxjs';
 import { AaasApiService } from 'src/app/service/aaas-api/aaas-api.service';
 
 @Component({
@@ -8,8 +9,10 @@ import { AaasApiService } from 'src/app/service/aaas-api/aaas-api.service';
   styles: [
   ]
 })
-export class DetectorDeletionComponent implements OnInit {
+export class DetectorDeletionComponent implements OnInit, OnDestroy {
 
+  private destroy$: Subject<void> = new Subject<void>();
+  
   @Input() detectorId?: number;
   deletionError: boolean = false;
   popupVisible = false;
@@ -29,7 +32,9 @@ export class DetectorDeletionComponent implements OnInit {
 
   deleteDetector() {
     if (this.detectorId) {
-      this.apiService.deleteDetector(this.detectorId).subscribe(res => {
+      this.apiService.deleteDetector(this.detectorId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(res => {
         if (res) {
           this.router.navigateByUrl("/detectors");
           this.deletionError = false;
@@ -37,8 +42,12 @@ export class DetectorDeletionComponent implements OnInit {
         } else {
           this.deletionError = true;
         }
-      })
+      });
     }
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
   }
 
 }

@@ -1,10 +1,11 @@
-import localeDe from '@angular/common/locales/de';
 import { DatePipe } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Metric } from 'src/app/model/telemetricData/metric';
 import { AaasApiService } from 'src/app/service/aaas-api/aaas-api.service';
 import { environment } from 'src/environments/environment';
 import { ClientIdComparer } from 'src/app/util/client-id-comparer';
+import { Subject, takeUntil } from 'rxjs';
+import { groupBy } from '../../util/utils'
 
 class ChartData {
   constructor(
@@ -23,8 +24,10 @@ class ChartData {
   ],
   providers: [DatePipe]
 })
-export class MetricOverviewComponent implements OnInit {
+export class MetricOverviewComponent implements OnInit, OnDestroy {
 
+  private destroy$: Subject<void> = new Subject<void>();
+  
   chartTypes: string[] = ['Scatter', 'Line', 'Bar','Area', 'StepArea'];
   selectedChartType: string = "line";
   telemetricNames: string[] = [];
@@ -52,8 +55,20 @@ export class MetricOverviewComponent implements OnInit {
     private datePipe: DatePipe
   ) { }
 
+  ngOnInit(): void {
+    this.loadTelemetricNames();
+    this.loadClientInstances();
+    this.customizeText = this.customizeText.bind(this);
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+  }
+
   private loadTelemetricNames() {
-    this.apiService.getTelemetricNames(environment.apiKey).subscribe(res => {
+    this.apiService.getTelemetricNames(environment.apiKey)
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(res => {
       if (res != null) {
         this.telemetricNames = res;
         this.telemetricNamesLoaded = true;
@@ -66,7 +81,9 @@ export class MetricOverviewComponent implements OnInit {
   }
 
   private loadClientInstances() {
-    this.apiService.getClientInstances(environment.apiKey).subscribe(res => {
+    this.apiService.getClientInstances(environment.apiKey)
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(res => {
       if (res != null) {
         this.clientInstances = res.sort((a, b) => ClientIdComparer.compareClientIdByLastDigits(a, b));
         this.clientInstancesLoaded = true;
@@ -83,18 +100,18 @@ export class MetricOverviewComponent implements OnInit {
       this.selectionLoaded = this.telemetricNamesLoaded && this.clientInstancesLoaded;
   }
 
-  ngOnInit(): void {
-    this.loadTelemetricNames();
-    this.loadClientInstances();
-    this.customizeText = this.customizeText.bind(this);
-  }
-
   showToastError() {
     this.isToastVisible = true;
   }
 
+  // show value on hover
   showValueOnHover(arg: any) {
     return arg.valueText;
+  }
+
+  // add date pipe to x-axis
+  customizeText(pointInfo: any) {
+    return this.datePipe.transform(pointInfo.value, 'short');
   }
 
   generateCharts() {
@@ -104,31 +121,36 @@ export class MetricOverviewComponent implements OnInit {
     if (this.selectedClientInstances.length == 0 || this.selectedTelemetricNames.length != 1) {
       return;
     }
+    // counters, might cause a race condition but didn't happen so far
     let successCount: number = 0;
     let completionCount: number = 0;
 
     this.loadingChartData = true;
+
+    // in case someone spams the button, do not show chart data which is currently being processed
     let newCharts: ChartData[] = [];
     const metricName = this.selectedTelemetricNames[0];
-    this.selectedClientInstances.forEach(ci => {
-      this.apiService.getMetrics(environment.apiKey, ci, metricName).subscribe((res: Metric[]) => {
-        if (res != null) {
-          // don't make an empty chart :(
-          console.log(res.length);
-          if (res.length > 0) newCharts.push(new ChartData(ci, metricName, res));
-          successCount++;
-        }
-        completionCount++;
-        if (completionCount === this.selectedClientInstances.length) {
-          this.loadingChartData = false;
-          this.errorLoadingCharts = !(successCount === completionCount);
-        }
-      });
-    });
-    this.charts = newCharts;
-  }
 
-  customizeText(pointInfo: any) {
-    return this.datePipe.transform(pointInfo.value, 'short');
+    // all metrics for this appKey
+    this.apiService.getMetrics(environment.apiKey, undefined, metricName)
+    .pipe(takeUntil(this.destroy$))
+    .subscribe((res: Metric[]) => {
+      if (res != null) {
+        this.errorLoadingCharts = false;
+        // group metrics by client instance
+        const metricsGrouped: Record<string, Metric[]> = groupBy(res, i => i.clientId ?? "");
+        for (let curr in metricsGrouped) {
+          // don't make an empty chart :(
+          if (this.selectedClientInstances.includes(curr) && metricsGrouped[curr].length > 0)
+          newCharts.push(new ChartData(curr, metricName, metricsGrouped[curr]));
+        }
+      } else {
+        this.errorLoadingCharts = true;
+      }
+      this.loadingChartData = false;
+    });
+    
+    // set data
+    this.charts = newCharts;
   }
 }

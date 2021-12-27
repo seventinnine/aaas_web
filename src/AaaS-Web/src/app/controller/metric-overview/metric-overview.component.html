@@ -1,40 +1,49 @@
 <div class="container">
+  
+  <!-- loading indicator -->
   <aaas-loading [visible]="!selectionLoaded && !errorLoadingSelection"></aaas-loading>
+  <!-- loading indicator -->
+
   <div *ngIf="!errorLoadingSelection && selectionLoaded">
     <div class="row">
       <div class="col">
+        <!-- telemetric name selection -->
         <h2>Metrics</h2>
         <dx-list
-        #myList1
-        [dataSource]="telemetricNames"
-        [width]="400"
-        [height]="600"
-        [searchEnabled]="true"
-        searchMode="contains"
-        [selectionMode]="'single'"
-        [selectAllMode]="'page'"
-        [showSelectionControls]="true"
-        [(selectedItemKeys)]="selectedTelemetricNames"
-        ></dx-list>
+          #myList1
+          [dataSource]="telemetricNames"
+          [width]="400"
+          [height]="400"
+          [searchEnabled]="true"
+          searchMode="contains"
+          [selectionMode]="'single'"
+          [selectAllMode]="'page'"
+          [showSelectionControls]="true"
+          [(selectedItemKeys)]="selectedTelemetricNames"></dx-list>
       </div>
+      <!-- telemetric name selection -->
+
+      <!-- client instance selection -->
       <div class="col">
         <h2>Client instances</h2>
         <dx-list
           #myList2
           [dataSource]="clientInstances"
           [width]="400"
-          [height]="600"
+          [height]="400"
           [searchEnabled]="true"
           searchMode="contains"
           [selectionMode]="'all'"
           [showSelectionControls]="true"
-          [(selectedItemKeys)]="selectedClientInstances"
-          ></dx-list>
+          [(selectedItemKeys)]="selectedClientInstances"></dx-list>
       </div>
-        
+      <!-- client instance selection -->
+    
     </div>
+
+    <!-- chart mode selection -->
     <div class="dx-field position-sticky sticky-top">
-      <div class="dx-field-label">Chart mode:</div>
+      <div class="dx-field-label">Chart Mode:</div>
       <div class="dx-field-value">
         <dx-select-box
           [items]="chartTypes"
@@ -43,9 +52,13 @@
           ></dx-select-box>
       </div>
     </div>
+    <!-- chart mode selection -->
+
     <div class="btn btn-primary" (click)="generateCharts()">
       Generate Charts
     </div>
+
+    <!-- chart template -->
     <div id="chart">
       <dx-chart
         *ngFor="let data of charts"
@@ -53,47 +66,71 @@
         palette="Harmony Light"
         [dataSource]="data.data"
       >
-        <dxi-series [valueField]="'value'" [name]="data.telemetricName"></dxi-series>
+        <!-- general chart settings -->
         <dxo-common-series-settings
           #commonSeries
           argumentField="timestamp"
           hoverMode="allSeriesPoints"
-          [type]="selectedChartType"
-        >
+          [type]="selectedChartType">
         </dxo-common-series-settings>
+
         <dxo-size
           [height]="500">
         </dxo-size>
+
         <dxo-legend
           verticalAlignment="bottom"
           horizontalAlignment="center"
           itemTextPosition="bottom">
         </dxo-legend>
+
         <dxi-value-axis position="right">
           <dxo-title text="values"></dxo-title>
         </dxi-value-axis>
-        <dxo-argument-axis>
-          <dxo-label
-            [customizeText]="customizeText">
-          </dxo-label>
-          <dxo-minor-tick [visible]="false"></dxo-minor-tick>
-        </dxo-argument-axis>
+
         <dxo-tooltip
           [enabled]="true"
           location="edge"
           [customizeTooltip]="showValueOnHover"
         ></dxo-tooltip>
+
         <dxo-zoom-and-pan
             argumentAxis="both"
             valueAxis="none">
         </dxo-zoom-and-pan>
+        <!-- general chart settings -->
+
+        <!-- row data selection and name in legend -->
+        <dxi-series [valueField]="'value'" [name]="data.telemetricName">
+          <dxo-aggregation
+            [enabled]="true"
+            method="avg">
+          </dxo-aggregation>
+        </dxi-series>
+        <!-- row data selection and name in legend -->
+        
+        <!-- row data arguments -->
+        <dxo-argument-axis 
+          [visualRange]="{ length: 50 }"
+          [aggregationGroupWidth]="25"
+          [tick]="{ visible: false}">
+          <dxo-label
+            [customizeText]="customizeText">
+          </dxo-label>
+          <dxo-minor-tick [visible]="false"></dxo-minor-tick>
+        </dxo-argument-axis>
+        <!-- row data arguments -->
+
       </dx-chart>
       <aaas-loading [visible]="loadingChartData && !errorLoadingCharts"></aaas-loading>
       <div *ngIf="charts.length == 0 && !loadingChartData" class="text-center container fs-2">
         No data from selection available.
       </div>
     </div>
+    <!-- chart template -->
   </div>
+  
+  <!-- error handling -->
   <aaas-item-not-found [visible]="errorLoadingSelection"></aaas-item-not-found>
   <aaas-item-not-found [visible]="errorLoadingCharts" [offerRetry]="false"></aaas-item-not-found>
   <dx-toast [(visible)]="isToastVisible" [type]="'error'">
@@ -101,4 +138,5 @@
         <div class="fs-2 text-center">Could not fetch data from API</div>
     </div>
   </dx-toast>
+  <!-- error handling -->
 </div>

@@ -1,18 +1,21 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
-import { ActivatedRoute, Route, Router } from '@angular/router';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, } from '@angular/router';
 import { Detector } from 'src/app/model/detector/detector';
 import { AaasApiService } from 'src/app/service/aaas-api/aaas-api.service';
 import { environment } from 'src/environments/environment';
-import { timer } from 'rxjs';
-      import { take } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { validActionTypes, validDetectorTypes } from 'src/app/validator/type-must-exist-validator';
 @Component({
   selector: 'aaas-detector-details',
   templateUrl: './detector-details.component.html',
   styles: [
-  ]
+  ],
+  providers: []
 })
-export class DetectorDetailsComponent implements OnInit {
+export class DetectorDetailsComponent implements OnInit, OnDestroy {
+
+  private destroy$: Subject<void> = new Subject<void>();
 
   detector?: Detector;
   updating: boolean = false;
@@ -22,6 +25,9 @@ export class DetectorDetailsComponent implements OnInit {
   toastType: string = "";
   toastMessage: string = "placeholder";
 
+  detectorTypes: string[] = validDetectorTypes;
+  actionTypes: string[] = validActionTypes;
+
   constructor(
     private route: ActivatedRoute, 
     private apiService: AaasApiService
@@ -30,10 +36,18 @@ export class DetectorDetailsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.route.params.subscribe(params =>  
-      this.apiService.getDetectorById(environment.apiKey ,params['id']).subscribe(detector => {
+    this.route.params
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(params =>  
+      this.apiService.getDetectorById(environment.apiKey ,params['id'])
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(detector => {
         this.detector = detector;
       }));
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
   }
 
   showToastUpdate(success: boolean, id?: number, newState?: boolean) {
@@ -46,7 +60,9 @@ export class DetectorDetailsComponent implements OnInit {
     if (this.detector && !this.detector.enabled) {
       this.updating = true;
       this.detector.enabled = true;
-      this.apiService.updateDetector(this.detector).subscribe(res => {
+      this.apiService.updateDetector(this.detector)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(res => {
         if (!this.detector) return;
         this.updating = false;
         if (res == null) {
@@ -60,7 +76,9 @@ export class DetectorDetailsComponent implements OnInit {
     if (this.detector && this.detector.enabled) {
       this.updating = true;
       this.detector.enabled = false;
-      this.apiService.updateDetector(this.detector).subscribe(res => {
+      this.apiService.updateDetector(this.detector)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(res => {
         if (!this.detector) return;
         this.updating = false;
         if (res == null) {

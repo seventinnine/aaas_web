@@ -23,6 +23,11 @@ export class AaasApiService {
     return of(null);
   }
 
+  private errorHandlerQueryUndefined(error: Error | any): Observable<any> {
+    console.log(error);
+    return of(undefined);
+  }
+
   private errorHandlerBoolean(error: Error | any): Observable<boolean> {
     console.log(error);
     return of(false);
@@ -75,14 +80,20 @@ export class AaasApiService {
     .pipe(map<any, Detector[]>(res => res), catchError(this.errorHandlerQuery));
   }
 
+  detectorExists(appkey: string, name?: string): Observable<boolean> {
+    let queryString: string = this.filterUndefinedOrEmptyQueryStrings([{key: "name", value: name}]);
+    return this.http.get<Detector[]>(`${environment.server}/Detector?appkey=${appkey}${queryString}`)
+    .pipe(map<any, boolean>(res => res != null), catchError(this.errorHandlerQuery));
+  }
+
   getDetectorById(appkey: string, id: number): Observable<Detector> {
     return this.http.get<Detector>(`${environment.server}/Detector/${id}?appkey=${appkey}`)
       .pipe(map<any, Detector>(res => res), catchError(this.errorHandlerQuery));
   }
 
-  createDetector(detector: Detector): Observable<any> {
+  createDetector(detector: Detector): Observable<Detector> {
     return this.http.post<any>(`${environment.server}/Detector`, detector)
-      .pipe(map<any, boolean>(res => true), catchError(this.errorHandlerBoolean));
+      .pipe(map<any, Detector>(res => res), catchError(this.errorHandlerQuery));
   }
 
   updateDetector(detector: Detector): Observable<any> {

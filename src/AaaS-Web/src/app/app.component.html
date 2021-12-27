@@ -48,10 +48,11 @@
           <div class="fs-4 mx-2">Detectors</div>
         </a>
         <a
-          routerLink="login" 
+          *ngIf="loggedIn"
+          routerLink="login"
           routerLinkActive="active"
           class="nav-link text-white d-flex justify-content-center align-items-center">
-          <div class="fs-4 mx-2">LogIn</div>
+          <div class="fs-4 mx-2">LogOut</div>
         </a>
       </div>
   </div>

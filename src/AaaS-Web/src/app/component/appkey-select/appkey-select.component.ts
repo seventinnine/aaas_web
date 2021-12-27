@@ -1,4 +1,5 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
+import { Subject, takeUntil } from 'rxjs';
 import { AaasApiService } from 'src/app/service/aaas-api/aaas-api.service';
 
 @Component({
@@ -7,7 +8,9 @@ import { AaasApiService } from 'src/app/service/aaas-api/aaas-api.service';
   styles: [
   ]
 })
-export class AppkeySelectComponent implements OnInit {
+export class AppkeySelectComponent implements OnInit, OnDestroy {
+
+  private destroy$: Subject<void> = new Subject<void>();
 
   appKeys: string[] = [];
   loadingAppKeys: boolean = true;
@@ -19,16 +22,20 @@ export class AppkeySelectComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.apiService.getAppKeys().subscribe(res => {
+    this.apiService.getAppKeys()
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(res => {
       if (res != null) {
         this.appKeys = res;
         this.loadingAppKeys = false;
       } else {
         this.errorLoadingAppKeys = true;
       }
-    }
+    });
+  }
 
-    )
+  ngOnDestroy() {
+    this.destroy$.next();
   }
 
 }

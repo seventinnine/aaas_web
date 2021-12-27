@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { ThisReceiver } from '@angular/compiler';
+import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Subject, takeUntil } from 'rxjs';
 import { AuthenticationService } from 'src/app/service/authentication/authentication.service';
 
 @Component({
@@ -10,26 +12,31 @@ import { AuthenticationService } from 'src/app/service/authentication/authentica
 })
 export class LoginComponent implements OnInit {
 
-  loginErrorOccured = false;
-
-  loggedIn: boolean = false;
+  private destroy$: Subject<void> = new Subject<void>();
   
-  private returnTo: string = '';
+  loggedIn: boolean = false;
 
-  constructor(private auth: AuthenticationService, private router: Router, private route: ActivatedRoute) { }
+  constructor(private auth: AuthenticationService, private router: Router) { }
   
   ngOnInit() {
-    this.route.queryParams.subscribe(params => this.returnTo = params['returnUrl'])
-    this.loggedIn = this.auth.isLoggedIn();
+    this.auth.loginStatus
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(value => this.loggedIn = value);
   }
   
-  submitForm() {
-    if (this.auth.login()) {
-      this.router.navigateByUrl(this.returnTo);
-      this.loginErrorOccured = false;
-    } else {
-      this.loginErrorOccured = true;
-    }
+  logIn() {
+    this.auth.login();
+    // cannot redirect 
+  }
+
+  logOut() {
+    this.auth.logout()
+    // manualle move to home page
+    this.router.navigateByUrl("home");
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
   }
 
 }

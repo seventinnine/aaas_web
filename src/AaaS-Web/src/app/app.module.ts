@@ -24,6 +24,10 @@ import { MailActionDetailsComponent } from './component/mail-action-details/mail
 import { ItemNotFoundComponent } from './component/item-not-found/item-not-found.component';
 import { LoadingComponent } from './component/loading/loading.component';
 import { AppkeySelectComponent } from './component/appkey-select/appkey-select.component';
+import { MinMaxDetectorFormComponent } from './component/form/min-max-detector-form/min-max-detector-form.component';
+import { SlidingWindowDetectorFormComponent } from './component/form/sliding-window-detector-form/sliding-window-detector-form.component';
+import { WebHookActionFormComponent } from './component/form/web-hook-action-form/web-hook-action-form.component';
+import { MailActionFormComponent } from './component/form/mail-action-form/mail-action-form.component';
 
 // imports
 import { BrowserModule } from '@angular/platform-browser';
@@ -32,8 +36,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { OAuthModule } from 'angular-oauth2-oidc';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-
-// pipes
 import { IntervalToReadableTimePipe } from './pipe/interval-to-readable-time.pipe';
 
 @NgModule({
@@ -59,9 +61,14 @@ import { IntervalToReadableTimePipe } from './pipe/interval-to-readable-time.pip
     ItemNotFoundComponent,
     LoadingComponent,
     AppkeySelectComponent,
+    MinMaxDetectorFormComponent,
+    SlidingWindowDetectorFormComponent,
+    MailActionFormComponent,
+    WebHookActionFormComponent,
     
     // pipes
     IntervalToReadableTimePipe
+         
   ],
   imports: [
     BrowserModule,

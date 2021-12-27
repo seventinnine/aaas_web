@@ -1,9 +1,11 @@
 <div *ngIf="detector" class="container">
     <div class="d-flex flex-column">
+        <!-- general detector details -->
         <div class="d-flex flex-row">
             <div>
                 Detector {{detector.id}} ({{detector.type}})
             </div>
+            <!-- detector activation status (togglable) -->
             <div *ngIf="detector.enabled && !updating" class="fs-2 btn btn-success" (click)="disableDetector()">
                 Enabled
             </div>
@@ -22,6 +24,7 @@
                     Loading...
                 </div>
             </div>
+            <!-- detector activation status (togglable) -->
         </div>
         <div>
             Created for {{detector.appKey}}
@@ -32,27 +35,34 @@
         <div>
             Triggers every {{detector.executionInterval | intervalToReadableTime}}
         </div>
+        <!-- general detector details -->
         <div>
             Configuration:
+            <!-- detector type specific details -->
             <div>
                 Detector Parameters:
             </div>
             <div [ngSwitch]="detector.type">
                 <div>
-                    <aaas-min-max-detector-details *ngSwitchCase="'MinMaxDetector'"></aaas-min-max-detector-details>
-                    <aaas-sliding-window-detector-details *ngSwitchCase="'SlidingWindowDetector'"></aaas-sliding-window-detector-details>
+                    <aaas-min-max-detector-details *ngSwitchCase="detectorTypes[0]"></aaas-min-max-detector-details>
+                    <aaas-sliding-window-detector-details *ngSwitchCase="detectorTypes[1]"></aaas-sliding-window-detector-details>
                 </div>
             </div>
+            <!-- detector type specific details -->
+
+            <!-- action type specific details -->
             <div>
                 Action Parameters:
             </div>
             <div [ngSwitch]="detector.action?.type">
                 <div>
-                    <aaas-web-hook-action-details *ngSwitchCase="'WebHookAction'"></aaas-web-hook-action-details>
-                    <aaas-mail-action-details *ngSwitchCase="'MailAction'"></aaas-mail-action-details>
+                    <aaas-web-hook-action-details *ngSwitchCase="actionTypes[0]"></aaas-web-hook-action-details>
+                    <aaas-mail-action-details *ngSwitchCase="actionTypes[1]"></aaas-mail-action-details>
                 </div>
             </div>
+            <!-- action type specific details -->
         </div>
+        <!-- options -->
         <div>
             <a class="btn btn-primary" [routerLink]="['/detectors']">
                 Back
@@ -62,6 +72,9 @@
             </a>
             <aaas-detector-deletion [detectorId]="detector?.id"></aaas-detector-deletion>
         </div>
+        <!-- options -->
     </div>
 </div>
+<!-- erorr handling -->
 <aaas-item-not-found [visible]="!detector" [destination]="'/detectors'"></aaas-item-not-found>
+<!-- erorr handling -->

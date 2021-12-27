@@ -1,5 +1,6 @@
-import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { DxDataGridComponent } from 'devextreme-angular';
+import { Subject, takeUntil } from 'rxjs';
 import { Detector } from 'src/app/model/detector/detector';
 import { AaasApiService } from 'src/app/service/aaas-api/aaas-api.service';
 import { environment } from 'src/environments/environment';
@@ -10,8 +11,10 @@ import { environment } from 'src/environments/environment';
   styles: [
   ]
 })
-export class DetectorListComponent implements OnInit {
+export class DetectorListComponent implements OnInit, OnDestroy {
 
+  private destroy$: Subject<void> = new Subject<void>();
+  
   @ViewChild('dataGridRef', { static: false }) dataGrid!: DxDataGridComponent;
   @Output() showDetailsEvent = new EventEmitter<Detector>();
 
@@ -36,7 +39,9 @@ export class DetectorListComponent implements OnInit {
   }
 */
   loadDetectors() {
-    this.apiService.getDetectors(environment.apiKey).subscribe(res => {
+    this.apiService.getDetectors(environment.apiKey)
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(res => {
       if (res != null) {
         this.filterResult = res;
         this.errorLoadingDetectors = false;
@@ -45,6 +50,10 @@ export class DetectorListComponent implements OnInit {
       }
       this.loadingDetectors = false;
     });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
   }
 
 }

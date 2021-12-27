@@ -1,0 +1,15 @@
+<div [formGroup]="detectorForm">
+    <p>Triggers a webhook with detailed information about the anomaly</p>
+    <div class="form-group">
+        <label for="httpAddress-input">Http Address</label>
+        <input 
+            #min
+            type="text"
+            id="httpAddress-input"
+            class="form-control"
+            name="httpAddress" formControlName="httpAddress"/>
+        <div *ngIf="errors['httpAddress']" class="form-text text-danger">
+            {{ errors['httpAddress'] }}
+        </div>
+    </div>
+</div>

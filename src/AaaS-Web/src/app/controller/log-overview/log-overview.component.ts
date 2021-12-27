@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subject, takeUntil } from 'rxjs';
 import { LogMessage } from 'src/app/model/telemetricData/log-message';
 import { AaasApiService } from 'src/app/service/aaas-api/aaas-api.service';
 import { environment } from 'src/environments/environment';
@@ -9,9 +10,10 @@ import { environment } from 'src/environments/environment';
   styles: [
   ]
 })
-export class LogOverviewComponent implements OnInit {
+export class LogOverviewComponent implements OnInit, OnDestroy {
 
-  filterTerm: string = "";
+  private destroy$: Subject<void> = new Subject<void>();
+  
   filterData: LogMessage[] = [];
 
   constructor(
@@ -19,10 +21,16 @@ export class LogOverviewComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.apiService.getLogMessages(environment.apiKey, "").subscribe(res => {
+    this.apiService.getLogMessages(environment.apiKey, "")
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(res => {
       if (res != null) this.filterData = res;
       
     });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
   }
 
   getFilteredData(logs: LogMessage[]) {

@@ -1,0 +1,15 @@
+<div [formGroup]="detectorForm">
+    <p>Sends mail with detailed information about the anomaly</p>
+    <div class="form-group">
+        <label for="email-input">Email Address</label>
+        <input 
+            #min
+            type="text"
+            id="email-input"
+            class="form-control"
+            name="email" formControlName="email">
+        <div *ngIf="errors['email']" class="form-text text-danger">
+            {{ errors['email'] }}
+        </div>
+    </div>
+</div>
