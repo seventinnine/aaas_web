@@ -2,7 +2,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, } from '@angular/router';
 import { Detector } from 'src/app/model/detector/detector';
 import { AaasApiService } from 'src/app/service/aaas-api/aaas-api.service';
-import { environment } from 'src/environments/environment';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { validActionTypes, validDetectorTypes } from 'src/app/validator/type-must-exist-validator';
@@ -39,7 +38,7 @@ export class DetectorDetailsComponent implements OnInit, OnDestroy {
     this.route.params
     .pipe(takeUntil(this.destroy$))
     .subscribe(params =>  
-      this.apiService.getDetectorById(environment.apiKey ,params['id'])
+      this.apiService.getDetectorById(params['id'])
       .pipe(takeUntil(this.destroy$))
       .subscribe(detector => {
         this.detector = detector;

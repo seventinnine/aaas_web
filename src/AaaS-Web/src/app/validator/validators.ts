@@ -1,4 +1,4 @@
-import { AbstractControl, ValidationErrors, ValidatorFn } from "@angular/forms";
+import { AbstractControl } from "@angular/forms";
 import { toExecutionInterval } from "../util/utils";
 
 // takes a predicate
@@ -19,8 +19,4 @@ export function TotalDurationMoreThanOneSecond (c: AbstractControl) {
   ) >= 1000) return null;
   c.get('executionInterval1')!.setErrors({totalDurationInvalid: true});
   return {totalDurationInvalid: {value: false}}
-}
-
-export function CheckIfDetectorDoesNotAlreadyExist (c: AbstractControl) {
-  return null;
 }

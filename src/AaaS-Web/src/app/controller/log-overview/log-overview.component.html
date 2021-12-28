@@ -1,4 +1,12 @@
 <div class="container">
-    <aaas-log-search class="m-4" (logsFiltered)="getFilteredData($event)"></aaas-log-search>
-    <aaas-log-list [displayData]="filterData"></aaas-log-list>
+    <div class="container text-center m-3">
+        <h1>Logs</h1>
+        <div>
+            This page shows all detectors for '{{appKey}}'
+        </div>
+    </div>
+    <div class="border px-5 py-1">
+        <aaas-log-search class="m-1" (logsFiltered)="getFilteredData($event)"></aaas-log-search>
+        <aaas-log-list [displayData]="filterData"></aaas-log-list>
+    </div>
 </div>

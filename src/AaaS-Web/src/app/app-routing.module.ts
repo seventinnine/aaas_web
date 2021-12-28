@@ -8,10 +8,11 @@ import { MetricOverviewComponent } from './controller/metric-overview/metric-ove
 import { LogOverviewComponent } from './controller/log-overview/log-overview.component';
 import { DetectorOverviewComponent } from './controller/detector-overview/detector-overview.component';
 import { DetectorDetailsComponent } from './controller/detector-details/detector-details.component';
+import { DetectorFormComponent } from './controller/detector-form/detector-form.component';
 
 // guards
 import { CanUseClientGuard } from './guard/can-use-client.guard';
-import { DetectorFormComponent } from './controller/detector-form/detector-form.component';
+import { AppKeyGuard } from './guard/app-key.guard';
 
 const routes: Routes = [
   {
@@ -35,32 +36,32 @@ const routes: Routes = [
    {
     path: 'metrics',
     component: MetricOverviewComponent,
-    canActivate: [CanUseClientGuard]
+    canActivate: [CanUseClientGuard, AppKeyGuard]
    },
    {
     path: 'logs',
     component: LogOverviewComponent,
-    canActivate: [CanUseClientGuard]
+    canActivate: [CanUseClientGuard, AppKeyGuard]
    },
    {
     path: 'detectors',
     component: DetectorOverviewComponent,
-    canActivate: [CanUseClientGuard]
+    canActivate: [CanUseClientGuard, AppKeyGuard]
    },
    {
     path: 'detector/:id',
     component: DetectorDetailsComponent,
-    canActivate: [CanUseClientGuard]
+    canActivate: [CanUseClientGuard, AppKeyGuard]
    },
    {
     path: 'detectors/form/:id',
     component: DetectorFormComponent,
-    canActivate: [CanUseClientGuard]
+    canActivate: [CanUseClientGuard, AppKeyGuard]
    },
    {
     path: 'detectors/form',
     component: DetectorFormComponent,
-    canActivate: [CanUseClientGuard]
+    canActivate: [CanUseClientGuard, AppKeyGuard]
    }
 ];
 

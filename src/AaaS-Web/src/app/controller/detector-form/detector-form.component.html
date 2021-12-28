@@ -4,6 +4,7 @@
     <h1 *ngIf="isUpdatingDetector" class="m-5">Edit Detector</h1>
     <h1 *ngIf="!isUpdatingDetector" class="m-5">Add Detector</h1>
     <form 
+        class="bg-light p-5 border"
         *ngIf="formInitialized"
         [formGroup]="detectorForm"
         (ngSubmit)="submitForm()">
@@ -11,7 +12,7 @@
             <!-- general properties of detector -->
             <div class="col">
                 <h3>General Settings:</h3>
-                <div class="form-group">
+                <div class="form-group p-2">
                     <label for="appKey-input">AppKey</label>
                     <input 
                         type="text"
@@ -24,9 +25,9 @@
                 </div>
 
                 <!-- execution interval -->
-                <div class="form-group row">
+                <div class="form-group p-2 row">
                     <!-- hours -->
-                    <label for="executionInterval-input">Execution Interval</label>
+                    <label for="executionInterval-input" class=" mb-1">Execution Interval</label>
                     <div class="col">
                         <label for="executionInterval-input1">Hours</label>
                         <input
@@ -85,7 +86,7 @@
                 <!-- execution interval -->
                 
                 <!-- telemetric name -->
-                <div *ngIf="!isUpdatingDetector" class="form-group">
+                <div *ngIf="!isUpdatingDetector" class="form-group p-2">
                     <label for="telemetricName-input">Telemetric Name</label>
                     <input 
                         type="text"
@@ -96,10 +97,22 @@
                         {{ errors['telemetricName'] }}
                     </div>
                 </div>
+
+                <div *ngIf="isUpdatingDetector" class="form-group p-2">
+                    <label for="telemetricName-input">Telemetric Name</label>
+                    <input 
+                        type="text"
+                        id="telemetricName-input"
+                        class="form-control"
+                        formControlName="telemetricName" readonly/>
+                    <div *ngIf="errors['telemetricName']" class="form-text text-danger">
+                        {{ errors['telemetricName'] }}
+                    </div>
+                </div>
                 <!-- telemetric name -->
 
                 <!-- detector type -->
-                <div *ngIf="!isUpdatingDetector" class="form-group">
+                <div *ngIf="!isUpdatingDetector" class="form-group p-2">
                     <label for="type-input">Detector Type</label>
                     <select id="type-input" class="form-select" formControlName="type" >
                         <option *ngFor="let curr of detectorTypes" value={{curr}}>{{curr}}</option>
@@ -111,7 +124,7 @@
                 <!-- detector type -->
                 
                 <!-- action type -->
-                <div *ngIf="!isUpdatingDetector" class="form-group">
+                <div *ngIf="!isUpdatingDetector" class="form-group p-2">
                     <label for="actionType-input">Action Type</label>
                     <select id="actionType-input" class="form-select" formControlName="actionType">
                         <option *ngFor="let curr of actionTypes" value={{curr}}>{{curr}}</option>
@@ -121,49 +134,47 @@
                     </div>
                 </div>
                 <!-- action type -->
-                
-                <!-- general properties of detector -->
-                
-                <button type="submit" class="btn btn-success" [disabled]="detectorForm.invalid">Send</button>
-                <a class="btn btn-primary" [routerLink]="'/detectors'">Cancel</a>
-                <aaas-detector-deletion [detectorId]="detector.id" *ngIf="isUpdatingDetector"></aaas-detector-deletion>
             </div>
             <!-- general properties of detector -->
             
             <!-- variable settings - depend on type selection -->
-            <div *ngIf="formInitialized" class="col">
+            <div *ngIf="formInitialized" class="col border p-3">
                 <!-- detector type specific settings -->
                 <h3>Condition Settings:</h3>
                 <p>Determines when a detector triggers an action</p>
-                <div [ngSwitch]="selectedDetectorType">
-                    <aaas-min-max-detector-form
-                        [detectorForm]="detectorForm"
-                        [errors]="errors"
-                        *ngSwitchCase="detectorTypes[0]"></aaas-min-max-detector-form>
-                    <aaas-sliding-window-detector-form 
-                        [detectorForm]="detectorForm"
-                        [errors]="errors"
-                        *ngSwitchCase="detectorTypes[1]"></aaas-sliding-window-detector-form>
-                </div>
+                <aaas-min-max-detector-form
+                    [detectorForm]="detectorForm"
+                    [errors]="errors"></aaas-min-max-detector-form>
+                <aaas-sliding-window-detector-form 
+                    [detectorForm]="detectorForm"
+                    [errors]="errors"></aaas-sliding-window-detector-form>
                 <!-- detector type specific settings -->
                 
                 <!-- action type specific settings -->
                 <h3>Action Settings:</h3>
                 <p>Determines what the action should perform</p>
-                <div [ngSwitch]="selectedActionType">
-                    <aaas-web-hook-action-form
+                <aaas-web-hook-action-form
+                    [detectorForm]="detectorForm"
+                    [errors]="errors"></aaas-web-hook-action-form>
+                <aaas-mail-action-form
                         [detectorForm]="detectorForm"
-                        [errors]="errors"
-                        *ngSwitchCase="actionTypes[0]"></aaas-web-hook-action-form>
-                    <aaas-mail-action-form
-                        [detectorForm]="detectorForm"
-                        [errors]="errors"
-                        *ngSwitchCase="actionTypes[1]"></aaas-mail-action-form>
-                </div>
+                        [errors]="errors"></aaas-mail-action-form>
                 <!-- action type specific settings -->
             </div>
             <!-- variable settings - depend on type selection -->
+            
         </div>
+        <!-- buttons -->         
+        <button type="submit" class="btn btn-success m-1" [disabled]="detectorForm.invalid">Send</button>
+        <a class="btn btn-primary m-1" [routerLink]="'/detectors'">Cancel</a>
+        <aaas-detector-deletion [detectorId]="detector.id" *ngIf="isUpdatingDetector"></aaas-detector-deletion>
+        <!-- detector already exists -->
+        <div *ngIf="alreadyExists">
+            <h2 class="fs-4">A detector for {{detectorForm.value.telemetricName}} already exists!</h2>
+            <a type="submit" class="btn btn-primary" [routerLink]="['/detector/', foundDetectorId]">Go to detector</a>
+        </div>
+        <!-- detector already exists -->
+        <!-- buttons -->
     </form>
     
     <!-- error when sending -->
@@ -172,10 +183,5 @@
     </div>
     <!-- error when sending -->
     
-    <!-- detector already exists -->
-    <div *ngIf="alreadyExists">
-        <h2 class="text-danger">A detector for this Telemetric Name already exists!</h2>
-        <a type="submit" class="btn btn-info" [routerLink]="['/detector/', foundDetectorId]">Go to detector</a>
-    </div>
-    <!-- detector already exists -->
+
 </div>

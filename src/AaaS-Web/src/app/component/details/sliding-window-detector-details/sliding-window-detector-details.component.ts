@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { Detector } from 'src/app/model/detector/detector';
+
 
 @Component({
   selector: 'aaas-sliding-window-detector-details',
@@ -8,6 +10,8 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SlidingWindowDetectorDetailsComponent implements OnInit {
 
+  @Input() detector!: Detector;
+  
   constructor() { }
 
   ngOnInit(): void {

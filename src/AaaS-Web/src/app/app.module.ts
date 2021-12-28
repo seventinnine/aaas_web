@@ -13,14 +13,15 @@ import { DetectorListComponent } from './component/detector-list/detector-list.c
 import { LoginComponent } from './component/login/login.component';
 
 // components
+import { HomeComponent } from './controller/home/home.component';
 import { DetectorDeletionComponent } from './component/detector-deletion/detector-deletion.component';
 import { DetectorFormComponent } from './controller/detector-form/detector-form.component';
 import { LogListComponent } from './component/log-list/log-list.component';
 import { LogSearchComponent } from './component/log-search/log-search.component';
-import { MinMaxDetectorDetailsComponent } from './component/min-max-detector-details/min-max-detector-details.component';
-import { SlidingWindowDetectorDetailsComponent } from './component/sliding-window-detector-details/sliding-window-detector-details.component';
-import { WebHookActionDetailsComponent } from './component/web-hook-action-details/web-hook-action-details.component';
-import { MailActionDetailsComponent } from './component/mail-action-details/mail-action-details.component';
+import { MinMaxDetectorDetailsComponent } from './component/details/min-max-detector-details/min-max-detector-details.component';
+import { SlidingWindowDetectorDetailsComponent } from './component/details/sliding-window-detector-details/sliding-window-detector-details.component';
+import { WebHookActionDetailsComponent } from './component/details/web-hook-action-details/web-hook-action-details.component';
+import { MailActionDetailsComponent } from './component/details/mail-action-details/mail-action-details.component';
 import { ItemNotFoundComponent } from './component/item-not-found/item-not-found.component';
 import { LoadingComponent } from './component/loading/loading.component';
 import { AppkeySelectComponent } from './component/appkey-select/appkey-select.component';
@@ -37,6 +38,7 @@ import { OAuthModule } from 'angular-oauth2-oidc';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { IntervalToReadableTimePipe } from './pipe/interval-to-readable-time.pipe';
+import { WordToComparisonOpPipe } from './pipe/word-to-comparison-op.pipe';
 
 @NgModule({
   declarations: [
@@ -50,6 +52,8 @@ import { IntervalToReadableTimePipe } from './pipe/interval-to-readable-time.pip
     LoginComponent,
 
     // components
+    AppkeySelectComponent,
+    HomeComponent,
     MinMaxDetectorDetailsComponent,
     SlidingWindowDetectorDetailsComponent,
     WebHookActionDetailsComponent,
@@ -60,14 +64,14 @@ import { IntervalToReadableTimePipe } from './pipe/interval-to-readable-time.pip
     LogSearchComponent,
     ItemNotFoundComponent,
     LoadingComponent,
-    AppkeySelectComponent,
     MinMaxDetectorFormComponent,
     SlidingWindowDetectorFormComponent,
     MailActionFormComponent,
     WebHookActionFormComponent,
     
     // pipes
-    IntervalToReadableTimePipe
+    IntervalToReadableTimePipe,
+    WordToComparisonOpPipe
          
   ],
   imports: [

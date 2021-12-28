@@ -1,7 +1,9 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { FormGroup, Validators } from '@angular/forms';
+import { Subject, takeUntil } from 'rxjs';
 import { Detector } from 'src/app/model/detector/detector';
-import { validAggregationOperations, validComparisonOperations } from 'src/app/validator/type-must-exist-validator';
+import { TypeChangedService } from 'src/app/service/type-changed/type-changed.service';
+import { typeMustExistValidator, validAggregationOperations, validComparisonOperations } from 'src/app/validator/type-must-exist-validator';
 
 @Component({
   selector: 'aaas-sliding-window-detector-form',
@@ -9,7 +11,10 @@ import { validAggregationOperations, validComparisonOperations } from 'src/app/v
   styles: [
   ]
 })
-export class SlidingWindowDetectorFormComponent implements OnInit {
+export class SlidingWindowDetectorFormComponent implements OnInit, OnDestroy {
+
+  private destroy$: Subject<void> = new Subject<void>();
+  isActive: boolean = false;
 
   @Input() detectorForm!: FormGroup;
   @Input() errors!: { [key: string]: string };
@@ -17,9 +22,40 @@ export class SlidingWindowDetectorFormComponent implements OnInit {
   aggregationOperations: string[] = validAggregationOperations;
   comparisonOperations: string[] = validComparisonOperations;
 
-  constructor() { }
-
+  constructor(
+    private typeService: TypeChangedService
+  ) { }
+  
   ngOnInit(): void {
+    this.typeService.detectorTypeChanged
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(type => {
+        if (type === 'SlidingWindowDetector') {
+          if (!this.isActive) {
+            this.detectorForm.get('aggregationOp')?.addValidators([Validators.required, typeMustExistValidator(validAggregationOperations)]);
+            this.detectorForm.get('aggregationOp')?.updateValueAndValidity();
+            this.detectorForm.get('comparisonOp')?.addValidators([Validators.required, typeMustExistValidator(validComparisonOperations)]);
+            this.detectorForm.get('comparisonOp')?.updateValueAndValidity();
+            this.detectorForm.get('threshold')?.addValidators([Validators.required]);
+            this.detectorForm.get('threshold')?.updateValueAndValidity();
+            this.isActive = true;
+          } 
+        } else {
+          if (this.isActive) {
+            this.detectorForm.get('aggregationOp')?.clearValidators();
+            this.detectorForm.get('aggregationOp')?.updateValueAndValidity();
+            this.detectorForm.get('comparisonOp')?.clearValidators();
+            this.detectorForm.get('comparisonOp')?.updateValueAndValidity();
+            this.detectorForm.get('threshold')?.clearValidators();
+            this.detectorForm.get('threshold')?.updateValueAndValidity();
+            this.isActive = false;
+          } 
+        }
+      });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
   }
 
 }

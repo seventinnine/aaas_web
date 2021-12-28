@@ -1,6 +1,6 @@
-<div [formGroup]="detectorForm">
+<div *ngIf="isActive" [formGroup]="detectorForm">
     <p>Triggers action when aggregated metric values fulfil the given condition</p>
-    <div class="form-group">
+    <div class="form-group p-2">
         <label for="aggregationOp-input">Aggregation Operation</label>
         <select class="form-select" name="aggregationOp" formControlName="aggregationOp">
             <option *ngFor="let curr of aggregationOperations" value={{curr}}>{{curr}}</option>
@@ -9,7 +9,7 @@
             {{ errors['aggregationOp'] }}
         </div>
     </div>
-    <div class="form-group">
+    <div class="form-group p-2">
         <label for="comparisonOp-input">Comparison Operation</label>
         <select class="form-select" name="comparisonOp" formControlName="comparisonOp">
             <option *ngFor="let curr of comparisonOperations" value={{curr}}>{{curr}}</option>
@@ -18,7 +18,7 @@
             {{ errors['comparisonOp'] }}
         </div>
     </div>
-    <div class="form-group">
+    <div class="form-group p-2">
         <label for="threshold-input">Threshold</label>
         <input 
             type="number"

@@ -26,6 +26,8 @@ export class LogSearchComponent implements OnInit, OnDestroy {
   @Output() logsFiltered = new EventEmitter<LogMessage[]>();
   keyUp = new EventEmitter<string>();
 
+  appKey!: string;
+
   constructor(
     private apiService: AaasApiService
   ) { }
@@ -42,6 +44,9 @@ export class LogSearchComponent implements OnInit, OnDestroy {
       switchMap(searchTerm => this.filterLogMessages(searchTerm)),
       takeUntil(this.destroy$)
     ).subscribe(res => this.logsFiltered.emit(res));
+    this.apiService.appKeyStatus
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(key => this.appKey = key);
   }
 
   ngOnDestroy() {
@@ -58,7 +63,7 @@ export class LogSearchComponent implements OnInit, OnDestroy {
       this.categoryQuery
     );
     */
-    return this.apiService.getLogMessages(environment.apiKey, searchTerm);
+    return this.apiService.getLogMessages(searchTerm);
   }
   /*
   setCategoryQuery(e: string) {

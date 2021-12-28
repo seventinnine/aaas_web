@@ -1,6 +1,6 @@
 import { Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { DxDataGridComponent } from 'devextreme-angular';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, take, takeUntil } from 'rxjs';
 import { Detector } from 'src/app/model/detector/detector';
 import { AaasApiService } from 'src/app/service/aaas-api/aaas-api.service';
 import { environment } from 'src/environments/environment';
@@ -20,7 +20,7 @@ export class DetectorListComponent implements OnInit, OnDestroy {
 
   filterResult: Detector[] = [];
   
-  appKey: string = environment.apiKey;
+  appKey!: string;
   loadingDetectors: boolean = false;
   errorLoadingDetectors: boolean = false;
 
@@ -29,27 +29,23 @@ export class DetectorListComponent implements OnInit, OnDestroy {
   constructor(private apiService: AaasApiService) { }
 
   ngOnInit(): void {
-    this.loadDetectors();
-  }
-  
-  /*
-  updateDetectorList(appKey: string) {
-    this.appKey = appKey;
-    this.loadDetectors();
-  }
-*/
-  loadDetectors() {
-    this.apiService.getDetectors(environment.apiKey)
-    .pipe(takeUntil(this.destroy$))
-    .subscribe(res => {
-      if (res != null) {
-        this.filterResult = res;
-        this.errorLoadingDetectors = false;
-      } else {
-        this.errorLoadingDetectors = true;
-      }
-      this.loadingDetectors = false;
-    });
+    this.apiService.appKeyStatus
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(key => {
+        this.appKey = key;
+        console.log(key);
+        this.apiService.getDetectors()
+          .pipe(takeUntil(this.destroy$))
+          .subscribe(res => {
+            if (res != null) {
+              this.filterResult = res;
+              this.errorLoadingDetectors = false;
+            } else {
+              this.errorLoadingDetectors = true;
+            }
+            this.loadingDetectors = false;
+        });
+      });
   }
 
   ngOnDestroy() {

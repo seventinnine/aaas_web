@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { Detector } from 'src/app/model/detector/detector';
 
 @Component({
   selector: 'aaas-min-max-detector-details',
@@ -8,6 +9,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MinMaxDetectorDetailsComponent implements OnInit {
 
+  @Input() detector!: Detector;
   constructor() { }
 
   ngOnInit(): void {

@@ -6,23 +6,23 @@
   <div class="container text-center m-3">
     <h1>Detectors</h1>
     <div>
-      This page shows all detectors for the user '{{appKey}}'
+      This page shows all detectors for '{{appKey}}'
     </div>
   </div>
   <dx-data-grid
-    [keyExpr]="'telemetricName'"
+    class="border p-3"
+    keyExpr="telemetricName"
     [dataSource]="filterResult"
     [showBorders]="true"
     [rowAlternationEnabled]="true"
     [allowColumnResizing]="true"
-    [columnHidingEnabled]="false"
+    [columnAutoWidth]="true"
   >
     <dxo-scrolling rowRenderingMode="virtual"> </dxo-scrolling>
     <dxo-search-panel [visible]="true"></dxo-search-panel>
     <dxo-paging [pageSize]="15"> </dxo-paging>
-      <dxi-column dataField="appKey" dataType="string" width="400" caption="App Key"></dxi-column>
-      <dxi-column dataField="telemetricName" dataType="string" width="200" caption="Name"></dxi-column>
-      <dxi-column dataField="enabled" dataType="boolean" width=100 caption="Enabled"></dxi-column>
+      <dxi-column dataField="telemetricName" dataType="string" caption="Name"></dxi-column>
+      <dxi-column dataField="enabled" dataType="boolean"caption="Enabled"></dxi-column>
       <dxi-column
         cellTemplate="executionInterval"
         width="100" caption="Interval"
@@ -31,9 +31,9 @@
           {{data.data.executionInterval | intervalToReadableTime}}  
         </div>  
       </dxi-column>
-      <dxi-column dataField="type" dataType="string" width="200" caption="Type"></dxi-column>
-      <dxi-column dataField="action.type" dataType="string" width="150" caption="ActionType"></dxi-column>
-      <dxi-column cellTemplate="action" width="100" caption="Actions" alignment="center">
+      <dxi-column dataField="type" dataType="string"caption="Type"></dxi-column>
+      <dxi-column dataField="action.type" dataType="string" caption="ActionType"></dxi-column>
+      <dxi-column cellTemplate="action" caption="Actions" alignment="center">
         <div *dxTemplate="let data of 'action'">  
           <a class="btn btn-info mx-1" [routerLink]="['/detector', data.data?.id]" >Details</a>
         </div>  

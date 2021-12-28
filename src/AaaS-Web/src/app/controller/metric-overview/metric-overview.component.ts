@@ -7,6 +7,7 @@ import { ClientIdComparer } from 'src/app/util/client-id-comparer';
 import { Subject, takeUntil } from 'rxjs';
 import { groupBy } from '../../util/utils'
 
+// local class for data of a chart and titles ...
 class ChartData {
   constructor(
     public title: string,
@@ -66,7 +67,7 @@ export class MetricOverviewComponent implements OnInit, OnDestroy {
   }
 
   private loadTelemetricNames() {
-    this.apiService.getTelemetricNames(environment.apiKey)
+    this.apiService.getTelemetricNames()
     .pipe(takeUntil(this.destroy$))
     .subscribe(res => {
       if (res != null) {
@@ -81,7 +82,7 @@ export class MetricOverviewComponent implements OnInit, OnDestroy {
   }
 
   private loadClientInstances() {
-    this.apiService.getClientInstances(environment.apiKey)
+    this.apiService.getClientInstances()
     .pipe(takeUntil(this.destroy$))
     .subscribe(res => {
       if (res != null) {
@@ -121,9 +122,6 @@ export class MetricOverviewComponent implements OnInit, OnDestroy {
     if (this.selectedClientInstances.length == 0 || this.selectedTelemetricNames.length != 1) {
       return;
     }
-    // counters, might cause a race condition but didn't happen so far
-    let successCount: number = 0;
-    let completionCount: number = 0;
 
     this.loadingChartData = true;
 
@@ -132,7 +130,7 @@ export class MetricOverviewComponent implements OnInit, OnDestroy {
     const metricName = this.selectedTelemetricNames[0];
 
     // all metrics for this appKey
-    this.apiService.getMetrics(environment.apiKey, undefined, metricName)
+    this.apiService.getMetrics(undefined, metricName)
     .pipe(takeUntil(this.destroy$))
     .subscribe((res: Metric[]) => {
       if (res != null) {

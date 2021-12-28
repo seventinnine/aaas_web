@@ -1,0 +1,22 @@
+title component swap
+
+
+participant UserInput
+
+participant "DetectorFormComponent\n.type.valueChanges" as detectorForm
+
+participant "TypeChangedService" as service
+
+participant "MinMaxDetector\nFormComponent" as minMax
+
+participant "SlidingWindowDetector\nFormComponent" as slidingWindow
+
+detectorForm->detectorForm:1: subscribe( => detectorTypeChanged.next(type))
+service<-minMax:2: detectorTypeChanged.subscribe\n(res => if MinMax enable validators and\nshow else remove validators and hide)
+service<-slidingWindow:2: detectorTypeChanged.subscribe\n(res => if Sliding enable validators and\nshow else remove validators and hide)
+UserInput->detectorForm:3: type = "MinMax"
+detectorForm->service:4: detectorTypeChanged.next(MinMax)
+service-->minMax:5: res = MinMax
+service-->slidingWindow:5: res = MinMax
+minMax->minMax:6: activate validators\nand show
+slidingWindow->slidingWindow:6: deactivate validators\nand hide

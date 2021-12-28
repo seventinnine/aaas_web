@@ -1,6 +1,6 @@
-<div [formGroup]="detectorForm">
+<div *ngIf="isActive" [formGroup]="detectorForm">
     <p>Triggers a webhook with detailed information about the anomaly</p>
-    <div class="form-group">
+    <div class="form-group p-2">
         <label for="httpAddress-input">Http Address</label>
         <input 
             #min

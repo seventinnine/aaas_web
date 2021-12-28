@@ -1,40 +1,58 @@
 <!-- expanding button -->
-<dx-check-box [(value)]="isExpanded" text="Expand All Groups"></dx-check-box>
-<!-- expanding button -->
+<div>
+  <dx-check-box 
+    class="p-3"
+    [value]="false"
+    text="Expand All Groups"
+    [disabled]="!groupingEnabled"
+    (onValueChanged)="updateExpansion($event)"></dx-check-box>
+  <dx-check-box
+    class="p-3"
+    [value]="true"
+    text="Group Logs"
+    (onValueChanged)="updateGrouping($event)"></dx-check-box>
+  <!-- expanding button -->
 
+  <!-- log list template -->
+  <dx-data-grid
+    id="gridContainer"
+    [dataSource]="displayData"
+    [allowColumnReordering]="false"
+    [rowAlternationEnabled]="true"
+    [wordWrapEnabled]="true"
+    [showBorders]="true">
+    [columnAutoWidth]="true"
+    
+    <!-- general grid settings -->
+    <dxo-paging [pageSize]="30"></dxo-paging>
+    <dxo-pager
+      visible="true"
+      [showInfo]="true"
+      displayMode="full"
+    ></dxo-pager>
+    <dxo-grouping [autoExpandAll]="isExpanded ?? false"></dxo-grouping>
+    <!-- general grid settings -->
+    
+    <!-- grid column data -->
+    <dxi-column dataField="clientId" [groupIndex]="clientIdGrouping"
+      [sortingMethod]="sortClientIdByLastDigits"></dxi-column>
+    <dxi-column dataField="category" [groupIndex]="categoryGrouping"></dxi-column>
+    <dxi-column dataField="name" [groupIndex]="nameGrouping"></dxi-column>
+    <dxi-column
+      dataField="timestamp"
+      caption="Timestamp" 
+      [calculateCellValue]="calculateTimestampValue"
+      [sortingMethod]="sortStringsConsideringDate"> <!-- enables sorting -->
+      <!-- 
+        <div *dxTemplate="let data of 'timestamp'">  
+          {{data.data.timestamp | date:'medium'}}  
+        </div>  
+      -->  
+    </dxi-column>
+    <!-- grid column data -->
 
-<!-- log list template -->
-<dx-data-grid class="text-dark"
-  id="gridContainer"
-  [dataSource]="displayData"
-  [allowColumnReordering]="false"
-  [rowAlternationEnabled]="true"
-  [showBorders]="true">
-  
-  <!-- general grid settings -->
-  <dxo-paging [pageSize]="30"></dxo-paging>
-  <dxo-grouping [autoExpandAll]="isExpanded ?? false"></dxo-grouping>
-  <!-- general grid settings -->
-  
-  <!-- grid column data -->
-  <dxi-column dataField="clientId" [groupIndex]="0"
-    [sortingMethod]="sortClientIdByLastDigits"></dxi-column>
-  <dxi-column dataField="category" [groupIndex]="1"></dxi-column>
-  <dxi-column dataField="name" [groupIndex]="2"></dxi-column>
-  <dxi-column
-    dataField="timestamp"
-    [width]="200"
-    caption="Timestamp" 
-    [calculateCellValue]="calculateTimestampValue"
-    [sortingMethod]="sortStringsConsideringDate"> <!-- enables sorting -->
-    <!-- 
-      <div *dxTemplate="let data of 'timestamp'">  
-        {{data.data.timestamp | date:'medium'}}  
-      </div>  
-    -->  
-  </dxi-column>
-  <!-- grid column data -->
+    <dxi-column dataField="message" caption="Message"></dxi-column>
+  </dx-data-grid>
+  <!-- log list template -->
 
-  <dxi-column dataField="message" caption="Message"></dxi-column>
-</dx-data-grid>
-<!-- log list template -->
+</div>

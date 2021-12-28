@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, HttpParamsOptions } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable, of, ReplaySubject, Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { map, catchError, retry } from 'rxjs/operators';
 import { Metric } from '../../model/telemetricData/metric';
@@ -14,8 +14,71 @@ import { ClientInstance } from 'src/app/model/client-instance/client-instance';
 
 export class AaasApiService {
 
-  constructor(private http: HttpClient) {
+  // new subscribers receive the latest appKey
+  appKeyStatus: ReplaySubject<string> = new ReplaySubject<string>(1);
+  // for components that listen to the validity of the appKey
+  appKeyAccepted: ReplaySubject<boolean> = new ReplaySubject<boolean>(1);
 
+  // for api calls only
+  private currentAppKey!: string;
+
+  private validAppKey: boolean = false;
+
+  validAppKeySet(): boolean {
+    return this.validAppKey;
+  }
+
+  getCurrentAppKey(): string {
+    return this.currentAppKey;
+  }
+
+  setAppKey(key: string): void {
+    const sub = this.appKeyExists(key)
+      .subscribe(valid => {
+        this.removeAppKeyFromLocalStorage();
+        if (valid) {
+          this.currentAppKey = key;
+          this.validAppKey = true;
+          this.storeAppKeyInLocalStorage();
+          this.appKeyStatus.next(key);
+        }
+        this.appKeyAccepted.next(valid);
+        sub.unsubscribe();
+    });
+  }
+
+  setAppKeyFromLocalStorage(key: string): void {
+    const sub = this.appKeyExists(key)
+      .subscribe(valid => {
+        if (valid) {
+          this.currentAppKey = key;
+          this.validAppKey = true;
+          this.appKeyStatus.next(key);
+        }
+        this.appKeyAccepted.next(valid);
+        sub.unsubscribe();
+    });
+  }
+
+  // done in case the new appKey is invalid
+  removeAppKeyFromLocalStorage() {
+    localStorage.removeItem('appKey');
+  }
+
+   //bad idea but good for debugging css
+  storeAppKeyInLocalStorage(): void {
+    localStorage.setItem('appKey', this.currentAppKey);
+  }
+    
+  // try to fetch app key from local storage
+  tryLoadAppKeyFromLocalStorage(): void {
+    const key = localStorage.getItem('appKey') || null;
+    if (key) this.setAppKeyFromLocalStorage(key);
+      
+  }
+  
+  constructor(private http: HttpClient) { 
+    this.appKeyStatus.next("");
   }
 
   private errorHandlerQuery(error: Error | any): Observable<any> {
@@ -43,24 +106,24 @@ export class AaasApiService {
     return res;
   }
 
-  getAppKeys(): Observable<string[]> {
-    return this.http.get<ClientInstance[]>(`${environment.server}/Client`)
-      .pipe(map<any, string[]>(res => res), catchError(this.errorHandlerQuery));
+  appKeyExists(key: string): Observable<boolean> {
+    return this.http.get<ClientInstance[]>(`${environment.server}/Client/${key}`)
+    .pipe(map<any, boolean>(res => res != null), catchError(this.errorHandlerBoolean));
   }
 
-  getClientInstances(appkey: string): Observable<string[]> {
-    return this.http.get<ClientInstance[]>(`${environment.server}/ClientInstance?appkey=${appkey}`)
+  getClientInstances(): Observable<string[]> {
+    return this.http.get<ClientInstance[]>(`${environment.server}/ClientInstance?appkey=${this.currentAppKey}`)
       .pipe(map<any, string[]>(res => res.map((ci: ClientInstance) => ci.clientId)), catchError(this.errorHandlerQuery));
   }
 
-  getMetrics(appkey: string, clientId?: string, metricName?: string): Observable<Metric[]> {
+  getMetrics(clientId?: string, metricName?: string): Observable<Metric[]> {
     let queryString: string = this.filterUndefinedOrEmptyQueryStrings([{key: "clientId", value: clientId}, {key: "metricName", value: metricName}]);
-    return this.http.get<Metric[]>(`${environment.server}/Metric?appkey=${appkey}${queryString}`)
+    return this.http.get<Metric[]>(`${environment.server}/Metric?appkey=${this.currentAppKey}${queryString}`)
       .pipe(map<any, Metric[]>(res => res), catchError(this.errorHandlerQuery));
   }
 
-  getTelemetricNames(appkey: string): Observable<string[]> {
-    return this.http.get<Metric[]>(`${environment.server}/Metric?appkey=${appkey}`)
+  getTelemetricNames(): Observable<string[]> {
+    return this.http.get<Metric[]>(`${environment.server}/Metric?appkey=${this.currentAppKey}`)
       .pipe(map<any, string[]>(res => res.map((m: Metric) => m.name)), map(res => [...new Set(res)]), catchError(this.errorHandlerQuery));
   }
   /*
@@ -70,24 +133,24 @@ export class AaasApiService {
       .pipe(map<any, LogMessage[]>(res => res), catchError(this.errorHandlerQuery));
   }
   */
-  getLogMessages(appkey: string, searchTerm: string): Observable<LogMessage[]> {
-    return this.http.get<Detector[]>(`${environment.server}/Log?appkey=${appkey}&searchTerm=${searchTerm}`)
+  getLogMessages(searchTerm: string): Observable<LogMessage[]> {
+    return this.http.get<Detector[]>(`${environment.server}/Log?appkey=${this.currentAppKey}&searchTerm=${searchTerm}`)
       .pipe(map<any, LogMessage[]>(res => res), catchError(this.errorHandlerQuery));
   }
-  getDetectors(appkey: string, name?: string): Observable<Detector[]> {
+  getDetectors(name?: string): Observable<Detector[]> {
     let queryString: string = this.filterUndefinedOrEmptyQueryStrings([{key: "name", value: name}]);
-    return this.http.get<Detector[]>(`${environment.server}/Detector?appkey=${appkey}${queryString}`)
+    return this.http.get<Detector[]>(`${environment.server}/Detector?appkey=${this.currentAppKey}${queryString}`)
     .pipe(map<any, Detector[]>(res => res), catchError(this.errorHandlerQuery));
   }
 
-  detectorExists(appkey: string, name?: string): Observable<boolean> {
+  detectorExists(name?: string): Observable<boolean> {
     let queryString: string = this.filterUndefinedOrEmptyQueryStrings([{key: "name", value: name}]);
-    return this.http.get<Detector[]>(`${environment.server}/Detector?appkey=${appkey}${queryString}`)
+    return this.http.get<Detector[]>(`${environment.server}/Detector?appkey=${this.currentAppKey}${queryString}`)
     .pipe(map<any, boolean>(res => res != null), catchError(this.errorHandlerQuery));
   }
 
-  getDetectorById(appkey: string, id: number): Observable<Detector> {
-    return this.http.get<Detector>(`${environment.server}/Detector/${id}?appkey=${appkey}`)
+  getDetectorById(id: number): Observable<Detector> {
+    return this.http.get<Detector>(`${environment.server}/Detector/${id}?appkey=${this.currentAppKey}`)
       .pipe(map<any, Detector>(res => res), catchError(this.errorHandlerQuery));
   }
 
@@ -102,7 +165,7 @@ export class AaasApiService {
   }
 
   deleteDetector(id: number): Observable<any> {
-    return this.http.delete<any>(`${environment.server}/Detector/${id}?appkey=${environment.apiKey}`)
+    return this.http.delete<any>(`${environment.server}/Detector/${id}?appkey=${this.currentAppKey}`)
       .pipe(map<any, boolean>(res => true), catchError(this.errorHandlerBoolean));
   }
 

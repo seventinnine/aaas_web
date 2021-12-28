@@ -1,3 +1,4 @@
+import { ThrowStmt } from '@angular/compiler';
 import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
 import { AaasApiService } from 'src/app/service/aaas-api/aaas-api.service';
@@ -12,26 +13,33 @@ export class AppkeySelectComponent implements OnInit, OnDestroy {
 
   private destroy$: Subject<void> = new Subject<void>();
 
-  appKeys: string[] = [];
-  loadingAppKeys: boolean = true;
-  errorLoadingAppKeys: boolean = false;
+  invalidKey: boolean = false;
+  enterAppKeyPrompt: boolean = false;
   @Output() selectionChanged: EventEmitter<string> = new EventEmitter<string>();
+
+  currentAppKey!: string;
 
   constructor(
     private apiService: AaasApiService
   ) { }
 
   ngOnInit(): void {
-    this.apiService.getAppKeys()
-    .pipe(takeUntil(this.destroy$))
-    .subscribe(res => {
-      if (res != null) {
-        this.appKeys = res;
-        this.loadingAppKeys = false;
-      } else {
-        this.errorLoadingAppKeys = true;
-      }
+    this.apiService.appKeyStatus
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(key => {
+        this.enterAppKeyPrompt = key == "";
+        this.currentAppKey = key;
     });
+    this.apiService.appKeyAccepted
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(valid => {
+        this.enterAppKeyPrompt = false;
+        this.invalidKey = !valid;
+    });
+  }
+
+  checkAppKey() {
+    this.apiService.setAppKey(this.currentAppKey);
   }
 
   ngOnDestroy() {

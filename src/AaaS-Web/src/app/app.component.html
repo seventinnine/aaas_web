@@ -8,51 +8,70 @@
           <img
             src="../assets/data-analytics.svg"
             class="bi d-block mx-auto mb-1 bg-white"
-            width="50"
-            height="50"/>
-          <div class="fs-4 mx-2">SWK/WEA5 AaaS</div>
+            width="30"
+            height="30"/>
+          <div class="fs-5 mx-2 no-nav-text-on-mobile">SWK/WEA5 AaaS</div>
         </a>
       </div>
+      
+      <div *ngIf="loggedIn" class="me-auto bd-highligh">
+        <a 
+        routerLink="home"
+        routerLinkActive="active"
+        class="nav-link text-white d-flex justify-content-center align-items-center">
+          <div class="fs-5 mx-2">Hi {{userData['given_name']}} {{userData['family_name']}}</div>
+        </a>
+      </div>
+      
       <div class="nav bd-highligh">
         <a
+          *ngIf="apiKeyValid"
           routerLink="metrics"
           routerLinkActive="active"
           class="nav-link text-white d-flex justify-content-center align-items-center">
           <img
             src="../assets/metric.svg"
             class="bi d-block mx-auto mb-1 bg-white"
-            width="50"
-            height="50"/>
-          <div class="fs-4 mx-2">Metrics</div>
+            width="30"
+            height="30"/>
+          <div class="fs-5 mx-2 no-nav-text-on-mobile">Metrics</div>
         </a>
         <a
+          *ngIf="apiKeyValid"
           routerLink="logs"
           routerLinkActive="active"
           class="nav-link text-white d-flex justify-content-center align-items-center">
           <img
             src="../assets/log.svg"
             class="bi d-block mx-auto mb-1 bg-white"
-            width="50"
-            height="50"/>
-          <div class="fs-4 mx-2">Logs</div>
+            width="30"
+            height="30"/>
+          <div class="fs-5 mx-2 no-nav-text-on-mobile">Logs</div>
         </a>
         <a
+          *ngIf="apiKeyValid"
           routerLink="detectors"
           routerLinkActive="active"
           class="nav-link text-white d-flex justify-content-center align-items-center">
           <img
             src="../assets/detector.svg"
             class="bi d-block mx-auto mb-1 bg-white"
-            width="50"
-            height="50"/>
-          <div class="fs-4 mx-2">Detectors</div>
+            width="30"
+            height="25"/>
+          <div class="fs-5 mx-2 no-nav-text-on-mobile">Detectors</div>
         </a>
         <a
-          *ngIf="loggedIn"
-          routerLink="login"
+          *ngIf="!loggedIn"
+          (click)="login()"
           routerLinkActive="active"
-          class="nav-link text-white d-flex justify-content-center align-items-center">
-          <div class="fs-4 mx-2">LogOut</div>
+          class="btn btn-secondary active nav-link text-white d-flex justify-content-center align-items-center">
+          Sign in with OAuth2
+      </a>
+        <a
+          *ngIf="loggedIn"
+          (click)="logout()"
+          class="btn btn-secondary active nav-link text-white d-flex justify-content-center align-items-center">
+          LogOut
         </a>
       </div>
   </div>

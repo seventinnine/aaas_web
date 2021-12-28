@@ -1,15 +1,13 @@
 <div *ngIf="detector" class="container">
-    <div class="d-flex flex-column">
-        <!-- general detector details -->
-        <div class="d-flex flex-row">
-            <div>
-                Detector {{detector.id}} ({{detector.type}})
-            </div>
+    <div class="d-flex my-2 py-3 align-items-center space">
+        <div class="fs-2">
+           Detector {{ " " + detector.telemetricName }}
+        </div>
             <!-- detector activation status (togglable) -->
-            <div *ngIf="detector.enabled && !updating" class="fs-2 btn btn-success" (click)="disableDetector()">
+            <div *ngIf="detector.enabled && !updating" class="fs-2 btn btn-success  mx-4 " (click)="disableDetector()">
                 Enabled
             </div>
-            <div *ngIf="!detector.enabled && !updating" class="fs-2 btn btn-danger" (click)="enableDetector()">
+            <div *ngIf="!detector.enabled && !updating" class="fs-2 btn btn-danger  mx-4 " (click)="enableDetector()">
                 Disabled
             </div>
             <dx-toast [(visible)]="isToastVisible" [type]="toastType">
@@ -17,23 +15,23 @@
                     <div class="fs-2 text-center"> {{toastMessage}}</div>
                 </div>
             </dx-toast>
-            <div *ngIf="updating" class="d-flex">
-                <div class="spinner-border text-primary" role="status">
-                </div>
-                <div class="fs-2">
-                    Loading...
-                </div>
-            </div>
+            <aaas-loading [visible]="updating"></aaas-loading>
             <!-- detector activation status (togglable) -->
-        </div>
-        <div>
-            Created for {{detector.appKey}}
-        </div>
-        <div>
-            Observes anomialies in Metric of Type '{{detector.telemetricName}}'
-        </div>
-        <div>
-            Triggers every {{detector.executionInterval | intervalToReadableTime}}
+        
+    </div>
+    <div class="d-flex flex-column">
+        <!-- general detector details -->
+        <div class="fs-4">
+            General Settings:
+            <div class="fs-4">
+                Created for {{detector.appKey}}
+            </div>
+            <div class="fs-4">
+                Observes metrics of type '{{detector.telemetricName}}' and detects anomalies.
+            </div>
+            <div class="fs-4">
+                Triggers every {{detector.executionInterval | intervalToReadableTime}}
+            </div>
         </div>
         <!-- general detector details -->
         <div>
@@ -44,8 +42,12 @@
             </div>
             <div [ngSwitch]="detector.type">
                 <div>
-                    <aaas-min-max-detector-details *ngSwitchCase="detectorTypes[0]"></aaas-min-max-detector-details>
-                    <aaas-sliding-window-detector-details *ngSwitchCase="detectorTypes[1]"></aaas-sliding-window-detector-details>
+                    <aaas-min-max-detector-details
+                        [detector]="detector" 
+                        *ngSwitchCase="detectorTypes[0]"></aaas-min-max-detector-details>
+                    <aaas-sliding-window-detector-details
+                        [detector]="detector"
+                        *ngSwitchCase="detectorTypes[1]"></aaas-sliding-window-detector-details>
                 </div>
             </div>
             <!-- detector type specific details -->
@@ -54,20 +56,24 @@
             <div>
                 Action Parameters:
             </div>
-            <div [ngSwitch]="detector.action?.type">
+            <div [ngSwitch]="detector.action!.type">
                 <div>
-                    <aaas-web-hook-action-details *ngSwitchCase="actionTypes[0]"></aaas-web-hook-action-details>
-                    <aaas-mail-action-details *ngSwitchCase="actionTypes[1]"></aaas-mail-action-details>
+                    <aaas-web-hook-action-details
+                        [detector]="detector"
+                        *ngSwitchCase="actionTypes[0]"></aaas-web-hook-action-details>
+                    <aaas-mail-action-details 
+                        [detector]="detector"
+                        *ngSwitchCase="actionTypes[1]"></aaas-mail-action-details>
                 </div>
             </div>
             <!-- action type specific details -->
         </div>
         <!-- options -->
         <div>
-            <a class="btn btn-primary" [routerLink]="['/detectors']">
+            <a class="btn btn-primary m-1" [routerLink]="['/detectors']">
                 Back
             </a>
-            <a class="btn btn-primary" [routerLink]="['/detectors/form', detector.id]">
+            <a class="btn btn-primary m-1" [routerLink]="['/detectors/form', detector.id]">
                 Edit
             </a>
             <aaas-detector-deletion [detectorId]="detector?.id"></aaas-detector-deletion>

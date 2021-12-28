@@ -1,6 +1,6 @@
-<div [formGroup]="detectorForm">
+<div *ngIf="isActive" [formGroup]="detectorForm">
     <p>Triggers action when more than specified metrics (outliers) are outside of the specified interval</p>
-    <div class="form-group">
+    <div class="form-group p-2">
         <label for="minValue-input">Minimum Value</label>
         <input 
             #min
@@ -12,7 +12,7 @@
             {{ errors['minValue'] }}
         </div>
     </div>
-    <div class="form-group">
+    <div class="form-group p-2">
         <label for="maxValue-input">Maximum Value</label>
         <input 
             #max
@@ -24,7 +24,7 @@
             {{ errors['maxValue'] }}
         </div>
     </div>
-    <div class="form-group">
+    <div class="form-group p-2">
         <label for="outlierCount-input">Outlier Count</label>
         <input 
             #outliers

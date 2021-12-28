@@ -1,37 +1,36 @@
-<div class="container">
-  
-  <!-- loading indicator -->
-  <aaas-loading [visible]="!selectionLoaded && !errorLoadingSelection"></aaas-loading>
-  <!-- loading indicator -->
+<!-- loading indicator -->
+<aaas-loading class="d-flex justify-content-center mt-5" [visible]="!selectionLoaded && !errorLoadingSelection"></aaas-loading>
+<!-- loading indicator -->
 
-  <div *ngIf="!errorLoadingSelection && selectionLoaded">
-    <div class="row">
-      <div class="col">
+<div class="row" *ngIf="!errorLoadingSelection && selectionLoaded">
+  <div class="col max-width-metric-bar">
+    <div class="position-sticky sticky-top border m-5 p-3 bg-light">
+      <div class="p-3">
+
         <!-- telemetric name selection -->
         <h2>Metrics</h2>
         <dx-list
-          #myList1
-          [dataSource]="telemetricNames"
-          [width]="400"
-          [height]="400"
-          [searchEnabled]="true"
-          searchMode="contains"
-          [selectionMode]="'single'"
-          [selectAllMode]="'page'"
-          [showSelectionControls]="true"
-          [(selectedItemKeys)]="selectedTelemetricNames"></dx-list>
+        #myList1
+        [dataSource]="telemetricNames"
+        [searchEnabled]="true"
+        searchMode="contains"
+        [height]="300"
+        [selectionMode]="'single'"
+        [selectAllMode]="'page'"
+        [showSelectionControls]="true"
+        [(selectedItemKeys)]="selectedTelemetricNames"></dx-list>
+        
       </div>
       <!-- telemetric name selection -->
 
       <!-- client instance selection -->
-      <div class="col">
+      <div class="p-3">
         <h2>Client instances</h2>
         <dx-list
           #myList2
           [dataSource]="clientInstances"
-          [width]="400"
-          [height]="400"
           [searchEnabled]="true"
+          [height]="300"
           searchMode="contains"
           [selectionMode]="'all'"
           [showSelectionControls]="true"
@@ -39,104 +38,101 @@
       </div>
       <!-- client instance selection -->
     
-    </div>
-
-    <!-- chart mode selection -->
-    <div class="dx-field position-sticky sticky-top">
-      <div class="dx-field-label">Chart Mode:</div>
-      <div class="dx-field-value">
+      
+      <!-- chart mode selection -->
+      <div class="p-3">
+        <div class="form-label">Chart Mode:</div>
         <dx-select-box
-          [items]="chartTypes"
-          [(selectedItem)]="selectedChartType"
-          [placeholder]="'line'"
-          ></dx-select-box>
-      </div>
-    </div>
-    <!-- chart mode selection -->
-
-    <div class="btn btn-primary" (click)="generateCharts()">
-      Generate Charts
-    </div>
-
-    <!-- chart template -->
-    <div id="chart">
-      <dx-chart
-        *ngFor="let data of charts"
-        [title]="data.title"
-        palette="Harmony Light"
-        [dataSource]="data.data"
-      >
-        <!-- general chart settings -->
-        <dxo-common-series-settings
-          #commonSeries
-          argumentField="timestamp"
-          hoverMode="allSeriesPoints"
-          [type]="selectedChartType">
-        </dxo-common-series-settings>
-
-        <dxo-size
-          [height]="500">
-        </dxo-size>
-
-        <dxo-legend
-          verticalAlignment="bottom"
-          horizontalAlignment="center"
-          itemTextPosition="bottom">
-        </dxo-legend>
-
-        <dxi-value-axis position="right">
-          <dxo-title text="values"></dxo-title>
-        </dxi-value-axis>
-
-        <dxo-tooltip
-          [enabled]="true"
-          location="edge"
-          [customizeTooltip]="showValueOnHover"
-        ></dxo-tooltip>
-
-        <dxo-zoom-and-pan
-            argumentAxis="both"
-            valueAxis="none">
-        </dxo-zoom-and-pan>
-        <!-- general chart settings -->
-
-        <!-- row data selection and name in legend -->
-        <dxi-series [valueField]="'value'" [name]="data.telemetricName">
-          <dxo-aggregation
-            [enabled]="true"
-            method="avg">
-          </dxo-aggregation>
-        </dxi-series>
-        <!-- row data selection and name in legend -->
+        [items]="chartTypes"
+        [(selectedItem)]="selectedChartType"
+        [placeholder]="'line'"
+        ></dx-select-box>
         
-        <!-- row data arguments -->
-        <dxo-argument-axis 
-          [visualRange]="{ length: 50 }"
-          [aggregationGroupWidth]="25"
-          [tick]="{ visible: false}">
-          <dxo-label
-            [customizeText]="customizeText">
-          </dxo-label>
-          <dxo-minor-tick [visible]="false"></dxo-minor-tick>
-        </dxo-argument-axis>
-        <!-- row data arguments -->
-
-      </dx-chart>
-      <aaas-loading [visible]="loadingChartData && !errorLoadingCharts"></aaas-loading>
-      <div *ngIf="charts.length == 0 && !loadingChartData" class="text-center container fs-2">
-        No data from selection available.
+      </div>
+      <!-- chart mode selection -->
+      
+      <div class="btn btn-primary p-3" (click)="generateCharts()">
+        Generate Charts
       </div>
     </div>
-    <!-- chart template -->
   </div>
-  
-  <!-- error handling -->
-  <aaas-item-not-found [visible]="errorLoadingSelection"></aaas-item-not-found>
-  <aaas-item-not-found [visible]="errorLoadingCharts" [offerRetry]="false"></aaas-item-not-found>
-  <dx-toast [(visible)]="isToastVisible" [type]="'error'">
-    <div *dxTemplate="let data of 'content'">
-        <div class="fs-2 text-center">Could not fetch data from API</div>
+
+  <!-- chart template -->
+  <div class="col container metric-charts-width d-flex justify-content-center flex-column">
+    <div *ngIf="charts.length > 0 && !loadingChartData" class="position-sticky sticky-top text-center container fs-2 mb-2 bg-light border">
+      {{ charts[0].telemetricName }}
     </div>
-  </dx-toast>
-  <!-- error handling -->
+    <dx-chart
+      *ngFor="let data of charts"
+      [title]="data.title"
+      palette="Harmony Light"
+      [dataSource]="data.data"
+    >
+      <!-- general chart settings -->
+      <dxo-common-series-settings
+        #commonSeries
+        argumentField="timestamp"
+        hoverMode="allSeriesPoints"
+        [type]="selectedChartType">
+      </dxo-common-series-settings>
+
+      <dxo-size
+        [height]="500">
+      </dxo-size>
+
+      <dxo-legend
+        verticalAlignment="bottom"
+        horizontalAlignment="center"
+        itemTextPosition="bottom">
+      </dxo-legend>
+
+      <dxi-value-axis position="right">
+        <dxo-title text="values"></dxo-title>
+      </dxi-value-axis>
+
+      <dxo-tooltip
+        [enabled]="true"
+        location="edge"
+        [customizeTooltip]="showValueOnHover"
+      ></dxo-tooltip>
+
+      <dxo-zoom-and-pan
+          argumentAxis="both"
+          valueAxis="none">
+      </dxo-zoom-and-pan>
+      <!-- general chart settings -->
+
+      <!-- row data selection and name in legend -->
+      <dxi-series [valueField]="'value'" [name]="data.telemetricName">
+      </dxi-series>
+      <!-- row data selection and name in legend -->
+      
+      <!-- row data arguments -->
+      <dxo-argument-axis 
+        [visualRange]="{ length: 50 }"
+        [tick]="{ visible: false}">
+        <dxo-label
+          [customizeText]="customizeText">
+        </dxo-label>
+        <dxo-minor-tick [visible]="false"></dxo-minor-tick>
+      </dxo-argument-axis>
+      <!-- row data arguments -->
+
+    </dx-chart>
+    <aaas-loading class="d-flex justify-content-center" [visible]="loadingChartData && !errorLoadingCharts"></aaas-loading>
+    <div *ngIf="charts.length == 0 && !loadingChartData" class="text-center container fs-2">
+      No data from selection available.
+    </div>
+  </div>
+  <!-- chart template -->
+  <aaas-item-not-found  class="d-flex justify-content-center mt-5" [visible]="errorLoadingCharts" [offerRetry]="false"></aaas-item-not-found>
 </div>
+
+<!-- error handling -->
+<aaas-item-not-found class="d-flex justify-content-center mt-5" [visible]="errorLoadingSelection"></aaas-item-not-found>
+<dx-toast [(visible)]="isToastVisible" [type]="'error'">
+  <div *dxTemplate="let data of 'content'">
+      <div class="fs-2 text-center">Could not fetch data from API</div>
+  </div>
+</dx-toast>
+<!-- error handling -->

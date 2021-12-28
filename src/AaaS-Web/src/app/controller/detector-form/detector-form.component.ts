@@ -5,11 +5,12 @@ import { Subject, takeUntil } from 'rxjs';
 import { Detector } from 'src/app/model/detector/detector';
 import { AaasApiService } from 'src/app/service/aaas-api/aaas-api.service';
 import { getHours, getMinutes, getSeconds, removeUndefinedAndNull, toExecutionInterval } from 'src/app/util/utils';
-import { CheckIfMinValueNotLargerThanMaxValue, CheckIfDetectorDoesNotAlreadyExist, TotalDurationMoreThanOneSecond } from 'src/app/validator/validators';
-import { wordToComparisonOperation, typeMustExistValidator, validActionTypes, validDetectorTypes, validAggregationOperations, validComparisonOperations, comparisonOperationToWord } from 'src/app/validator/type-must-exist-validator';
+import { TotalDurationMoreThanOneSecond } from 'src/app/validator/validators';
+import { wordToComparisonOperation, typeMustExistValidator, validActionTypes, validDetectorTypes, comparisonOperationToWord } from 'src/app/validator/type-must-exist-validator';
 import { environment } from 'src/environments/environment';
 import { DetectorFormErrorMessages } from './detector-form-error-messages';
 import { Action } from 'src/app/model/action/action';
+import { TypeChangedService } from 'src/app/service/type-changed/type-changed.service';
 
 @Component({
   selector: 'aaas-detector-form',
@@ -40,15 +41,16 @@ export class DetectorFormComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private apiService: AaasApiService
+    private apiService: AaasApiService,
+    private typeService: TypeChangedService
   ) { }
 
   ngOnInit(): void {
-    this.detector.appKey = environment.apiKey;
+    this.detector.appKey = this.apiService.getCurrentAppKey();
     const id = this.route.snapshot.params['id'];
     if (id) {
       this.isUpdatingDetector = true;
-      this.apiService.getDetectorById(environment.apiKey, id)
+      this.apiService.getDetectorById(id)
       .pipe(takeUntil(this.destroy$))
       .subscribe(res => {
         if (res != null) {
@@ -101,73 +103,15 @@ export class DetectorFormComponent implements OnInit, OnDestroy {
         Validators.required,
         typeMustExistValidator(this.actionTypes)
       ]],
-      /*
-      minMaxForm: this.fb.group({
-        minValue: [this.detector.minValue, [
-          Validators.required
-        ]],
-        maxValue: [this.detector.maxValue, [
-          Validators.required
-        ]],
-        outlierCount: [this.detector.outlierCount, [
-          Validators.required
-        ]]
-      }),
-      slidingWindowForm: this.fb.group({
-        aggregationOp: [this.detector.aggregationOp, [
-          Validators.required,
-          typeMustExistValidator(validAggregationOperations)
-        ]],
-        comparisonOp: [wordToComparisonOperation(this.detector.comparisonOp ?? ""), [
-          Validators.required,
-          typeMustExistValidator(validComparisonOperations)
-        ]],
-        threshold: [this.detector.threshold, [
-          Validators.required
-        ]]
-      }),
-      webHookActionForm: this.fb.group({
-        email: [this.detector.action?.email, [
-          Validators.required,
-          Validators.email
-        ]]
-      }),
-      mailActionForm: this.fb.group({
-        httpAddress: [this.detector.action?.httpAddress, [
-          Validators.required
-        ]]
-      })
-      */
-      
-      minValue: [this.detector.minValue, [
-        Validators.required
-      ]],
-      maxValue: [this.detector.maxValue, [
-        Validators.required
-      ]],
-      outlierCount: [this.detector.outlierCount, [
-        Validators.required
-      ]],
-      aggregationOp: [this.detector.aggregationOp, [
-        Validators.required,
-        typeMustExistValidator(validAggregationOperations)
-      ]],
-      comparisonOp: [wordToComparisonOperation(this.detector.comparisonOp ?? ""), [
-        Validators.required,
-        typeMustExistValidator(validComparisonOperations)
-      ]],
-      threshold: [this.detector.threshold, [
-        Validators.required,
-        Validators.min(0)
-      ]],
-      email: [this.detector.action?.email, [
-        Validators.required,
-        Validators.email
-      ]],
-      httpAddress: [this.detector.action?.httpAddress, [
-        Validators.required
-      ]]
-    }, { validator: [CheckIfMinValueNotLargerThanMaxValue, TotalDurationMoreThanOneSecond]});
+      minValue: [this.detector.minValue],
+      maxValue: [this.detector.maxValue],
+      outlierCount: [this.detector.outlierCount],
+      aggregationOp: [this.detector.aggregationOp],
+      comparisonOp: [wordToComparisonOperation(this.detector.comparisonOp ?? "")],
+      threshold: [this.detector.threshold],
+      email: [this.detector.action?.email],
+      httpAddress: [this.detector.action?.httpAddress]
+    }, { validator: [TotalDurationMoreThanOneSecond]});
 
     this.detectorForm.statusChanges
       .pipe(takeUntil(this.destroy$))
@@ -191,8 +135,6 @@ export class DetectorFormComponent implements OnInit, OnDestroy {
     });
     this.registerValidationToggle();
     this.formInitialized = true;
-    this.toggleDetectorTypeValidation(this.detector.type);
-    this.toggleActionTypeValidation(this.detector.action?.type);
   }
 
   submitForm() {
@@ -235,7 +177,7 @@ export class DetectorFormComponent implements OnInit, OnDestroy {
       });
     } else {
       // check if detector already exists
-      this.apiService.detectorExists(detector.appKey!, detector.telemetricName)
+      this.apiService.detectorExists(detector.telemetricName)
       .pipe(takeUntil(this.destroy$))
       .subscribe(res => {
         // request successful
@@ -256,8 +198,7 @@ export class DetectorFormComponent implements OnInit, OnDestroy {
                 }
             });
           } else {
-            
-            this.apiService.getDetectors(detector.appKey!, detector.telemetricName)
+            this.apiService.getDetectors(detector.telemetricName)
               .pipe(takeUntil(this.destroy$))
               .subscribe(res => {
                 const d = res as Detector;
@@ -272,68 +213,27 @@ export class DetectorFormComponent implements OnInit, OnDestroy {
     }
   }
 
-  toggleDetectorTypeValidation(value: any) {
-    if (value === this.detectorTypes[0]) {
-      this.detectorForm.get('aggregationOp')?.clearValidators();
-      this.detectorForm.get('aggregationOp')?.updateValueAndValidity();
-      this.detectorForm.get('comparisonOp')?.clearValidators();
-      this.detectorForm.get('comparisonOp')?.updateValueAndValidity();
-      this.detectorForm.get('threshold')?.clearValidators();
-      this.detectorForm.get('threshold')?.updateValueAndValidity();
-      this.detectorForm.get('minValue')?.addValidators([Validators.required]);
-      this.detectorForm.get('minValue')?.updateValueAndValidity();
-      this.detectorForm.get('maxValue')?.addValidators([Validators.required]);
-      this.detectorForm.get('maxValue')?.updateValueAndValidity();
-      this.detectorForm.get('outlierCount')?.addValidators([Validators.required, Validators.min(0)]);
-      this.detectorForm.get('outlierCount')?.updateValueAndValidity();
-      this.detectorForm.addValidators(CheckIfDetectorDoesNotAlreadyExist)
-    }
-    else if (value === this.detectorTypes[1]) {
-      this.detectorForm.get('minValue')?.clearValidators();
-      this.detectorForm.get('minValue')?.updateValueAndValidity();
-      this.detectorForm.get('maxValue')?.clearValidators();
-      this.detectorForm.get('maxValue')?.updateValueAndValidity();
-      this.detectorForm.get('outlierCount')?.clearValidators();
-      this.detectorForm.get('outlierCount')?.updateValueAndValidity();
-      this.detectorForm.get('aggregationOp')?.addValidators([Validators.required, typeMustExistValidator(validAggregationOperations)]);
-      this.detectorForm.get('aggregationOp')?.updateValueAndValidity();
-      this.detectorForm.get('comparisonOp')?.addValidators([Validators.required, typeMustExistValidator(validComparisonOperations)]);
-      this.detectorForm.get('comparisonOp')?.updateValueAndValidity();
-      this.detectorForm.get('threshold')?.addValidators([Validators.required, Validators.min(0)]);
-      this.detectorForm.get('threshold')?.updateValueAndValidity();
-      this.detectorForm.addValidators(CheckIfDetectorDoesNotAlreadyExist)
-    }
-  }
-
-  toggleActionTypeValidation(value: any) {
-    if (value === this.actionTypes[0]) {
-      this.detectorForm.get('email')?.clearValidators();
-      this.detectorForm.get('email')?.updateValueAndValidity();
-      this.detectorForm.get('httpAddress')?.addValidators([Validators.required]);
-      this.detectorForm.get('httpAddress')?.updateValueAndValidity();
-    }
-    else if (value === this.actionTypes[1]) {
-      this.detectorForm.get('httpAddress')?.clearValidators();
-      this.detectorForm.get('httpAddress')?.updateValueAndValidity();
-      this.detectorForm.get('email')?.addValidators([Validators.required, Validators.email]);
-      this.detectorForm.get('email')?.updateValueAndValidity();
-    }
-  }
-
   // toggles validation of detector/action controls depending on selected type
   registerValidationToggle() {
     this.detectorForm.get('type')?.valueChanges
       .pipe(takeUntil(this.destroy$))
       .subscribe(value => {
-        this.toggleDetectorTypeValidation(value);
+        console.log("detector");
+        this.typeService.changeDetectorType(value);
         this.selectedDetectorType = value;
     });
     this.detectorForm.get('actionType')?.valueChanges
       .pipe(takeUntil(this.destroy$))
       .subscribe(value => {
-        this.toggleActionTypeValidation(value);
+        console.log("action");
+        this.typeService.changeActionType(value);
         this.selectedActionType = value;
     });
+    // set initial type for child forms
+    if (this.isUpdatingDetector) {
+      this.typeService.changeActionType(this.detector!.action!.type!);
+      this.typeService.changeDetectorType(this.detector!.type!);
+    }
   }
 
   updateErrorMessages() {
