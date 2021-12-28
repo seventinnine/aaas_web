@@ -1,37 +1,62 @@
 /* You can add global styles to this file, and also import other style files */
 
-@media only screen and (min-width: 1101px) {
-    .max-width-metric-bar {
-        max-width: 600px;
-        min-width: 500px;
-        float: left;
-    }
-
-    .metric-charts-width {
-        max-width: 70%;
-    }
-}
-
-@media only screen and (max-width: 1100px) {
-    .max-width-metric-bar {
-        justify-content: center;
-        align-items: center;
-        min-width: 70%;
-    }
-    
-    .metric-charts-width {
-        max-width: 90%;
-    }
-    .col {
-        columns: 1;
-    }
-    .row {
-        columns: 1;
-    }
-}
-
 @media screen and (max-width: 1000px) {
     .no-nav-text-on-mobile {
       display: none;
     }
-  }
+}
+@media screen and (max-width: 1500px) {
+    .home-grid {
+        width: 80%;
+        padding-top: 3rem;
+        margin: auto;
+    }
+}
+
+@media screen and (min-width: 1000px) {
+    /* metrics */
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: 50% 50%;
+    }
+    .detector-form-grid {
+        display: grid;
+        grid-template-columns: 50% 50%;
+    }
+    /* detector details */
+    .columns-2 {
+        display: grid;
+        grid-template-columns: 35% 65%;
+    }
+    .appkey-select {
+        width: 70%;
+    }
+}
+
+
+
+    /* metrics */
+@media screen and (min-width: 1500px) {
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: 30% 70%;
+    }
+    .home-grid {
+        display: grid;
+        padding-top: 3rem;
+        justify-content: center;
+        row-gap: 3rem;
+        column-gap: 10%;
+        grid-template-columns: 30% 30%;
+    }
+    .appkey-select {
+        width: 50%;
+    }
+}
+/* metrics */
+@media screen and (min-width: 2000px) {
+    .appkey-select {
+        width: 30%;
+    }
+}
+

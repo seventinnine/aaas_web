@@ -8,9 +8,9 @@
         *ngIf="formInitialized"
         [formGroup]="detectorForm"
         (ngSubmit)="submitForm()">
-        <div class="row">
+        <div class="detector-form-grid">
             <!-- general properties of detector -->
-            <div class="col">
+            <div class="">
                 <h3>General Settings:</h3>
                 <div class="form-group p-2">
                     <label for="appKey-input">AppKey</label>
@@ -138,7 +138,7 @@
             <!-- general properties of detector -->
             
             <!-- variable settings - depend on type selection -->
-            <div *ngIf="formInitialized" class="col border p-3">
+            <div *ngIf="formInitialized" class="border p-3">
                 <!-- detector type specific settings -->
                 <h3>Condition Settings:</h3>
                 <p>Determines when a detector triggers an action</p>

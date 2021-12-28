@@ -1,9 +1,23 @@
-
-<dx-text-box [(value)]="currentAppKey"></dx-text-box>
-<a (click)="checkAppKey()" class="btn btn-success">Update Key</a>
-<div *ngIf="invalidKey" class="text-danger">Invalid Key</div>
-<img *ngIf="invalidKey" src="../../../assets/docleave-dcleave.gif" height="100" width="100"/>
-<div *ngIf="!invalidKey && !enterAppKeyPrompt" class="text-success">Valid Key</div>
-<img *ngIf="!invalidKey && !enterAppKeyPrompt" src="../../../assets/poggers-emote.png" height="100" width="100"/>
-<div *ngIf="enterAppKeyPrompt">Enter Key</div>
-<img *ngIf="enterAppKeyPrompt" src="../../../assets/waiting.PNG" height="100" width="100"/>
+<!-- ඞ -->
+<div class="container p-0 border bg-light appkey-select">
+    <p class="fs-2 p-2 bg-primary text-white text-center">provide us with your app key</p>
+    <div class="d-flex flex-column justify-content-center p-3">
+        <p class="text-center">This app key is used to access your telemetric data.</p>
+        <dx-text-box class="mb-2" [(value)]="currentAppKey">
+        </dx-text-box>
+        <a (click)="checkAppKey()" class="btn btn-success mb-2">Update Key</a>
+        <div class="d-flex flex-column justify-content-center align-items-center" *ngIf="invalidKey" >
+            <div class="text-danger">Invalid Key</div>
+            <img class="border" src="../../../assets/docleave-dcleave.gif" height="100" width="100"/>
+        </div>
+        <div class="d-flex flex-column justify-content-center align-items-center" *ngIf="!invalidKey && !enterAppKeyPrompt">
+            <div class="text-success">Valid Key</div>
+            <img class="border" src="../../../assets/poggers-emote.png" height="100" width="100"/>
+        </div>
+        <div class="d-flex flex-column justify-content-center align-items-center" *ngIf="enterAppKeyPrompt">
+            <div>Enter Key</div>
+            <img class="border" src="../../../assets/waiting.PNG" height="100" width="100"/>
+        </div>
+    </div>
+</div>
+<!-- ඞ -->

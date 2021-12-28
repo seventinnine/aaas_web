@@ -2,8 +2,8 @@
 <aaas-loading class="d-flex justify-content-center mt-5" [visible]="!selectionLoaded && !errorLoadingSelection"></aaas-loading>
 <!-- loading indicator -->
 
-<div class="row" *ngIf="!errorLoadingSelection && selectionLoaded">
-  <div class="col max-width-metric-bar">
+<div class="metrics-grid" *ngIf="!errorLoadingSelection && selectionLoaded">
+  <div class="">
     <div class="position-sticky sticky-top border m-5 p-3 bg-light">
       <div class="p-3">
 
@@ -58,8 +58,8 @@
   </div>
 
   <!-- chart template -->
-  <div class="col container metric-charts-width d-flex justify-content-center flex-column">
-    <div *ngIf="charts.length > 0 && !loadingChartData" class="position-sticky sticky-top text-center container fs-2 mb-2 bg-light border">
+  <div class="d-flex justify-content-center flex-column">
+    <div *ngIf="charts.length > 0 && !loadingChartData" class="position-sticky sticky-top text-center container fs-2 mb-2 bg-primary text-white border">
       {{ charts[0].telemetricName }}
     </div>
     <dx-chart
